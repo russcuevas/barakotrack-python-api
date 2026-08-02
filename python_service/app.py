@@ -1,4 +1,7 @@
 import os
+import requests
+import io
+from PIL import Image
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from cnn_engine import CNNEngine
@@ -9,6 +12,16 @@ CORS(app)
 
 cnn_engine = CNNEngine()
 chatbot = BrahmmyChatbot()
+
+def load_image_from_path_or_url(source):
+    """
+    Helper to load image from local filepath or HTTP URL.
+    """
+    if source.startswith('http://') or source.startswith('https://'):
+        resp = requests.get(source, timeout=3)
+        return Image.open(io.BytesIO(resp.content))
+    else:
+        return Image.open(source)
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -21,7 +34,7 @@ def health():
 @app.route('/extract-features', methods=['POST'])
 def extract_features():
     """
-    Accepts an uploaded image file and returns its normalized 96-dim feature vector.
+    Accepts an uploaded image file and returns its normalized feature vector.
     """
     if 'image' not in request.files:
         return jsonify({"error": "No image file provided in request"}), 400
@@ -57,8 +70,36 @@ def compare_features():
     return jsonify({
         "status": "success",
         "similarity_score": score,
-        "is_potential_match": score >= 65.0
+        "is_potential_match": score > 45.0
     }), 200
+
+@app.route('/compare-images', methods=['POST'])
+def compare_images():
+    """
+    Directly compares two image filepaths/URLs using CNNEngine visual feature extraction.
+    """
+    data = request.get_json() or {}
+    path1 = data.get('path1')
+    path2 = data.get('path2')
+
+    if not path1 or not path2:
+        return jsonify({"error": "Both path1 and path2 image sources are required"}), 400
+
+    try:
+        img1 = load_image_from_path_or_url(path1)
+        img2 = load_image_from_path_or_url(path2)
+
+        vec1 = cnn_engine.extract_features(img1)
+        vec2 = cnn_engine.extract_features(img2)
+
+        score = cnn_engine.compute_similarity(vec1, vec2)
+        return jsonify({
+            "status": "success",
+            "similarity_score": score,
+            "is_potential_match": score > 45.0
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/chatbot', methods=['POST'])
 def chatbot_query():

@@ -21,11 +21,25 @@ class BrahmmyChatbot:
         if any(w in query for w in ["hello", "hi", "hey", "good morning", "good afternoon", "greetings", "kumusta"]):
             return {
                 "message": f"Hello {user_name}! I am Brahmmy, your official UB Barako Track Assistant. How can I help you recover or report a lost/found item today?",
-                "suggestions": ["How to report a lost item?", "Where is the Lost & Found office?", "How to claim an item?", "Office Hours"]
+                "suggestions": ["How to report a lost item?", "How to report a found item?", "Where is the Lost & Found office?", "Office Hours"]
             }
 
-        # 2. Office Location & Hours
-        if any(w in query for w in ["where", "location", "office", "headquarters", "building", "sa0"]):
+        # 2. How to Report / Surrender a Found Item
+        if "found" in query or ("report" in query and "found" in query) or "turn in" in query or "surrender" in query:
+            return {
+                "message": "🏢 **How to Report a Found Item:**\nIf you found an item on campus, you can go to the **Student Affairs Office (SAO)** or Campus Security Headquarters (Ground Floor, Main Admin Building) to surrender the item so our SAO admin can register it into storage!",
+                "suggestions": ["Where is the office?", "Office Hours", "How to report a lost item?"]
+            }
+
+        # 3. How to Report Lost Item
+        if "report" in query and ("lost" in query or "missing" in query):
+            return {
+                "message": "📝 **Steps to Report a Lost Item:**\n1. Click **'Report Lost Item'** in the navigation menu.\n2. Enter the item details (Title, Category, Date Lost, Location Tag).\n3. Upload a clear photograph if available.\n4. Submit your report! Our CNN AI will automatically match your item against found listings.",
+                "suggestions": ["Search Lost Items", "How to claim an item?", "Contact Support"]
+            }
+
+        # 4. Office Location & Hours
+        if any(w in query for w in ["where", "location", "office", "headquarters", "building", "sao"]):
             return {
                 "message": f"The Lost & Found Office is located at:\n📍 **{self.office_location}**\n\nContact: {self.contact_phone} | {self.contact_email}",
                 "suggestions": ["Office Hours", "How to claim an item?", "Report Lost Item"]
@@ -35,20 +49,6 @@ class BrahmmyChatbot:
             return {
                 "message": f"⏰ **Barako Track Office Hours:**\n{self.office_hours}\n\nOur team is available during these hours for physical item verifications and releases.",
                 "suggestions": ["Where is the office?", "How to claim an item?", "Search Items"]
-            }
-
-        # 3. How to Report Lost Item
-        if "report" in query and ("lost" in query or "missing" in query):
-            return {
-                "message": "📝 **Steps to Report a Lost Item:**\n1. Click **'Report Lost Item'** in the navigation bar.\n2. Enter the item details (Title, Category, Date Lost, Location Tag).\n3. Upload a clear photograph if available.\n4. Submit your report! Our CNN AI will automatically match your item against found listings.",
-                "suggestions": ["Search Lost Items", "How to claim an item?", "Contact Support"]
-            }
-
-        # 4. How to Report Found Item
-        if "report" in query and ("found" in query or "surrender" in query or "picked up" in query):
-            return {
-                "message": "🎒 **Steps to Report a Found Item:**\n1. Click **'Report Found Item'**.\n2. Provide where and when you found the item on campus.\n3. Upload a photo and specify the storage location (or surrender location).\n4. Submit the report so the owner can be notified!",
-                "suggestions": ["Where is the office?", "Report Lost Item"]
             }
 
         # 5. Claiming Process & Proof of Ownership
@@ -61,7 +61,7 @@ class BrahmmyChatbot:
         # 6. Categories Inquiry
         if any(w in query for w in ["category", "categories", "type", "what items"]):
             return {
-                "message": "🏷️ **Supported Item Categories on Barako Track:**\n• Electronics (Phones, Laptops, Earbuds, Chargers)\n• IDs & Cards (Student IDs, ATM Cards, Driver's License)\n• Bags & Wallets (Backpacks, Pouches, Purses)\n• Books & Documents (Textbooks, Notebooks, Envelopes)\n• Keys & Accessories (Keys, Jewelry, Umbrellas, Eyeglasses)\n• Clothing & Uniforms",
+                "message": "🏷️ **Supported Item Categories on Barako Track:**\n• Electronics (Phones, Laptops, Earbuds, Chargers)\n• IDs & Cards (Student IDs, ATM Cards, Driver's License)\n• Bags & Wallets (Backpacks, Purses, Wallets)\n• Books & Documents (Textbooks, Notebooks, Envelopes)\n• Keys & Accessories (Keys, Jewelry, Umbrellas, Eyeglasses)\n• Clothing & Uniforms",
                 "suggestions": ["Search Items", "Report Lost Item"]
             }
 
@@ -72,8 +72,8 @@ class BrahmmyChatbot:
                 "suggestions": ["Office Hours", "How to claim an item?"]
             }
 
-        # Default Response with Keyword Search Offer
+        # Default Response
         return {
-            "message": f"I'm Brahmmy! I can assist you with campus lost-and-found queries, reporting guidance, claim requirements, and searching item listings. Try asking about office hours, claiming proof, or reporting a lost item!",
-            "suggestions": ["How to report a lost item?", "Where is the office?", "How to claim an item?", "Office Hours"]
+            "message": f"I'm Brahmmy! I can assist you with campus lost-and-found queries. If you found an item on campus, you can go to the **Student Affairs Office (SAO)**!",
+            "suggestions": ["How to report a found item?", "How to report a lost item?", "Where is the office?", "Office Hours"]
         }

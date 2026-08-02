@@ -96,10 +96,16 @@
                                     <span class="badge {{ $badgeColor }} p-2 fw-bold"><i class="bi bi-cpu-fill me-1"></i> {{ $score }}% Match</span>
                                 </td>
                                 <td>
+                                @if ($found->status === 'available')
                                     <button class="btn btn-sm btn-secondary-custom fw-bold px-3"
-                                        onclick="openClaimModal('{{ $found->id }}', '{{ addslashes($found->title) }}', '{{ addslashes($found->storage_location) }}')">
+                                        onclick="openClaimModal('{{ $found->id }}', '{{ addslashes($found->title) }}', '{{ addslashes($found->storage_location) }}', '{{ $lost->id }}')">
                                         <i class="bi bi-shield-check me-1"></i> Claim Match
                                     </button>
+                                @else
+                                    <button class="btn btn-sm btn-outline-secondary fw-bold px-3" disabled>
+                                        <i class="bi bi-clock me-1"></i> Under Claim
+                                    </button>
+                                @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -123,14 +129,26 @@
                     <img src="{{ $item->image_path ?: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80' }}"
                         class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ $item->title }}">
                     <div class="card-body">
-                        <span class="badge bg-success mb-2">{{ ucfirst($item->status) }}</span>
+                        @if ($item->status === 'available')
+                            <span class="badge bg-success mb-2"><i class="bi bi-check-circle me-1"></i> Available</span>
+                        @elseif ($item->status === 'claim_pending')
+                            <span class="badge bg-warning text-dark mb-2"><i class="bi bi-clock me-1"></i> Claim Pending</span>
+                        @else
+                            <span class="badge bg-secondary mb-2">{{ str_replace('_', ' ', ucfirst($item->status)) }}</span>
+                        @endif
                         <h6 class="fw-bold mb-1" style="color: var(--primary-color);">{{ $item->title }}</h6>
                         <p class="text-muted fs-7 mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i>
                             {{ $item->location }}</p>
-                        <button class="btn btn-sm btn-primary-custom w-100 mt-2"
-                            onclick="openClaimModal('{{ $item->id }}', '{{ addslashes($item->title) }}', '{{ addslashes($item->storage_location) }}')">
-                            Submit Claim
-                        </button>
+                        @if ($item->status === 'available')
+                            <button class="btn btn-sm btn-primary-custom w-100 mt-2"
+                                onclick="openClaimModal('{{ $item->id }}', '{{ addslashes($item->title) }}', '{{ addslashes($item->storage_location) }}')">
+                                Submit Claim
+                            </button>
+                        @else
+                            <button class="btn btn-sm btn-outline-secondary w-100 mt-2" disabled>
+                                <i class="bi bi-clock me-1"></i> Under Claim
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>

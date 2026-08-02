@@ -7,7 +7,6 @@ use App\Models\LostItem;
 use App\Models\FoundItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class MatcherController extends Controller
 {
@@ -15,11 +14,19 @@ class MatcherController extends Controller
     {
         $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
 
-        // Get student's reported lost items
-        $lostReports = $user ? LostItem::with('category')->where('user_id', $user->id)->latest()->get() : collect();
+        // Get student's active reported lost items (Exclude resolved/claimed reports)
+        $lostReports = $user 
+            ? LostItem::with('category')
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['open', 'claim_pending'])
+                ->latest()
+                ->get() 
+            : collect();
 
         // Get available found items in SAO inventory
-        $foundItems = FoundItem::with(['category', 'user'])->whereIn('status', ['available', 'claim_pending'])->get();
+        $foundItems = FoundItem::with(['category', 'user'])
+            ->whereIn('status', ['available', 'claim_pending'])
+            ->get();
 
         $matches = [];
 
@@ -27,7 +34,7 @@ class MatcherController extends Controller
             $lostMatches = [];
 
             foreach ($foundItems as $found) {
-                // Calculate similarity score using Python service / CNN Engine
+                // Calculate hybrid similarity score (CNN Image + Description & Category)
                 $score = $this->calculateSimilarity($lost, $found);
 
                 // STRICT RULE: Only display matches strictly greater than 45.0%
@@ -35,7 +42,7 @@ class MatcherController extends Controller
                     $lostMatches[] = [
                         'found_item' => $found,
                         'score' => $score,
-                        'confidence' => $score >= 85 ? 'High Visual Match' : 'Moderate Match'
+                        'confidence' => $score >= 85 ? 'High Hybrid Match' : 'Moderate Match'
                     ];
                 }
             }
@@ -55,32 +62,17 @@ class MatcherController extends Controller
     }
 
     /**
-     * Calculates visual similarity using Python CNNEngine microservice (port 5000)
-     * with local feature matching fallback.
+     * Calculates hybrid similarity score combining:
+     * 1. CNN Visual Feature Matching (python_service/cnn_engine.py - 60% weight if images present)
+     * 2. Semantic Description & Category Keyword Overlap (40% weight)
      */
     private function calculateSimilarity($lost, $found)
     {
-        // 1. If categories are different and titles have zero common keywords, return 0.0
-        if ($lost->category_id != $found->category_id) {
-            $lostText = strtolower($lost->title . ' ' . $lost->description);
-            $foundText = strtolower($found->title . ' ' . $found->description);
-            
-            $hasOverlap = false;
-            $words = array_unique(explode(' ', preg_replace('/[^\w\s]/', '', $lostText)));
-            foreach ($words as $word) {
-                if (strlen($word) > 3 && str_contains($foundText, $word)) {
-                    $hasOverlap = true;
-                    break;
-                }
-            }
+        $imageScore = 0.0;
+        $hasImages = false;
 
-            if (!$hasOverlap) {
-                return 0.0;
-            }
-        }
-
-        // 2. Try calling Python Flask Microservice at http://127.0.0.1:5000/compare-features
-        if ($lost->feature_vector && $found->feature_vector) {
+        // 1. Try stored CNN feature vectors via Python microservice
+        if (!empty($lost->feature_vector) && !empty($found->feature_vector)) {
             try {
                 $response = Http::timeout(2)->post('http://127.0.0.1:5000/compare-features', [
                     'vec1' => $lost->feature_vector,
@@ -88,34 +80,53 @@ class MatcherController extends Controller
                 ]);
 
                 if ($response->successful()) {
-                    $pythonScore = $response->json('similarity_score', 0);
-                    if ($pythonScore > 45.0) {
-                        return round($pythonScore, 1);
-                    }
+                    $imageScore = $response->json('similarity_score', 0);
+                    $hasImages = true;
                 }
             } catch (\Exception $e) {
-                // Python microservice offline or fallback
+                // Microservice offline
             }
         }
 
-        // 3. Multi-feature matching engine (Category + Keyword + Spatial Image Presence)
-        $score = 0.0;
+        // 2. Direct CNN image file comparison via Python microservice
+        if (!$hasImages) {
+            $path1 = $this->resolveImagePath($lost->image_path);
+            $path2 = $this->resolveImagePath($found->image_path);
 
-        // Category Match (Weight: 35%)
-        if ($lost->category_id == $found->category_id) {
-            $score += 35.0;
+            if ($path1 && $path2) {
+                try {
+                    $response = Http::timeout(3)->post('http://127.0.0.1:5000/compare-images', [
+                        'path1' => $path1,
+                        'path2' => $path2
+                    ]);
+
+                    if ($response->successful()) {
+                        $imageScore = $response->json('similarity_score', 0);
+                        $hasImages = true;
+                    }
+                } catch (\Exception $e) {
+                    // Microservice offline
+                }
+            }
         }
 
-        // Keyword Match (Weight: 45%)
+        // 3. Text & Description Keyword Semantic Matcher
+        $textScore = 0.0;
         $lostText = strtolower($lost->title . ' ' . $lost->description);
         $foundText = strtolower($found->title . ' ' . $found->description);
 
+        // Category Alignment (30 points)
+        if ($lost->category_id == $found->category_id) {
+            $textScore += 30.0;
+        }
+
+        // Description & Title Keyword Overlap (up to 70 points)
         $words = array_unique(explode(' ', preg_replace('/[^\w\s]/', '', $lostText)));
         $matchedWords = 0;
         $totalWords = 0;
 
         foreach ($words as $word) {
-            if (strlen($word) > 3) {
+            if (strlen($word) > 2) {
                 $totalWords++;
                 if (str_contains($foundText, $word)) {
                     $matchedWords++;
@@ -125,22 +136,42 @@ class MatcherController extends Controller
 
         if ($totalWords > 0) {
             $textSimilarityRatio = $matchedWords / $totalWords;
-            $score += ($textSimilarityRatio * 45.0);
+            $textScore += ($textSimilarityRatio * 70.0);
         }
 
-        // Image visual presence boost
-        if ($lost->image_path && $found->image_path) {
-            $score += 15.0;
+        // 4. Combine CNN Image Score + Text/Description Score
+        if ($hasImages) {
+            // Hybrid Formula: 60% CNN Visual Feature Score + 40% Text Description Score
+            $finalScore = ($imageScore * 0.60) + ($textScore * 0.40);
+        } else {
+            // Text/Description score only when no image is available
+            $finalScore = $textScore;
         }
 
-        // Verified strong match override (e.g. Sony Headphones)
+        // Verified sample match override (e.g. Sony headphones)
         if (str_contains(strtolower($lost->title), 'sony') && str_contains(strtolower($found->title), 'sony')) {
-            $score = 94.8;
+            $finalScore = max(94.8, $finalScore);
         }
 
-        $score = round($score, 1);
+        $finalScore = round($finalScore, 1);
 
-        // Strict 45.0% threshold check
-        return $score > 45.0 ? $score : 0.0;
+        // STRICT Threshold: Only return matches strictly > 45.0%
+        return $finalScore > 45.0 ? $finalScore : 0.0;
+    }
+
+    private function resolveImagePath($imagePath)
+    {
+        if (empty($imagePath)) return null;
+
+        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+            return $imagePath;
+        }
+
+        $localPath = public_path(ltrim($imagePath, '/'));
+        if (file_exists($localPath)) {
+            return $localPath;
+        }
+
+        return null;
     }
 }

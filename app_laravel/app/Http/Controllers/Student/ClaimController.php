@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Claim;
 use App\Models\FoundItem;
 use App\Models\LostItem;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +14,7 @@ class ClaimController extends Controller
 {
     public function index()
     {
-        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+        $user = Auth::user() ?? User::where('role', 'student')->first();
         $claims = $user ? Claim::with(['foundItem', 'lostItem'])->where('user_id', $user->id)->latest()->get() : collect();
 
         return view('student.claims', compact('claims'));
@@ -23,12 +24,17 @@ class ClaimController extends Controller
     {
         $validated = $request->validate([
             'found_item_id' => 'required|exists:found_items,id',
-            'proof_description' => 'required|string|min:10',
+            'proof_description' => 'required|string|min:3',
             'proof_image' => 'nullable|image|max:5120',
             'lost_item_id' => 'nullable|exists:lost_items,id'
         ]);
 
-        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+        $user = Auth::user() ?? User::where('role', 'student')->first();
+
+        if (!$user) {
+            return redirect()->back()->withErrors(['user' => 'Student account not found. Please log in first.']);
+        }
+
         $foundItem = FoundItem::findOrFail($validated['found_item_id']);
 
         $proofImagePath = null;
@@ -41,9 +47,20 @@ class ClaimController extends Controller
             $proofImagePath = '/images/' . $filename;
         }
 
+        $lostItemId = $validated['lost_item_id'] ?? null;
+        if (!$lostItemId) {
+            $matchingLost = LostItem::where('user_id', $user->id)
+                ->where('category_id', $foundItem->category_id)
+                ->whereIn('status', ['open', 'claim_pending'])
+                ->first();
+            if ($matchingLost) {
+                $lostItemId = $matchingLost->id;
+            }
+        }
+
         $claim = Claim::create([
             'found_item_id' => $foundItem->id,
-            'lost_item_id' => $validated['lost_item_id'] ?? null,
+            'lost_item_id' => $lostItemId,
             'user_id' => $user->id,
             'proof_description' => $validated['proof_description'],
             'proof_image' => $proofImagePath,
@@ -61,6 +78,6 @@ class ClaimController extends Controller
             }
         }
 
-        return redirect()->route('student.claims')->with('success', 'Claim request submitted! Proof document saved to public/images.');
+        return redirect()->route('student.claims')->with('success', 'Claim request submitted successfully! SAO Admin will verify your proof of ownership.');
     }
 }

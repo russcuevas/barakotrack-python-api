@@ -50,7 +50,7 @@ Campus lost-and-found management can become inefficient when reports are scatter
 
 ### Core System Features
 
-1. **User Authentication & Authorization**: Role-based access control for Students, Administrators, and Campus Security.
+1. **User Authentication & Authorization**: Role-based access control for Students, Administrators.
 2. **Lost & Found Reporting**: Photo upload, date/time lost, location tag, detailed description, category assignment.
 3. **Search & AI Visual Match (CNN)**: Convolutional Neural Network image similarity search matching lost items with found items.
 4. **Claim Request & Proof Validation**: Structured claim submission requiring proof of ownership (identifying details, receipts, photos) and admin approval.

@@ -104,7 +104,7 @@
                         @elseif($item->status === 'claim_pending')
                             <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i> Claim Pending</span>
                         @else
-                            <span class="badge bg-secondary">{{ ucfirst($item->status) }}</span>
+                            <span class="badge bg-secondary">{{ str_replace('_', ' ', ucfirst($item->status)) }}</span>
                         @endif
                         <small class="text-muted"><i class="bi bi-calendar3"></i> {{ $item->date_found->format('M d, Y') }}</small>
                     </div>
