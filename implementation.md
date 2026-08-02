@@ -17,7 +17,7 @@
 - **Tech Stack:**
   - **Backend Framework:** Laravel (PHP 8.2+)
   - **AI / Smart Services:** Python (CNN Image Feature Extraction & Similarity Search + Brahmmy Chatbot Engine)
-  - **Database:** MySQL / phpMyAdmin (`barako_track`)
+  - **Database:** MySQL / phpMyAdmin (`barakotrackdb`)
   - **UI / Frontend Design:** Bootstrap 5 with Custom UB BarakoTrack CSS Design System
 
 ---

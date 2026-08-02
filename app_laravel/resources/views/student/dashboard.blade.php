@@ -77,8 +77,15 @@
                             @endphp
                             <tr>
                                 <td>
-                                    <div class="fw-bold text-dark">{{ $lost->title }}</div>
-                                    <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i> Lost: {{ $lost->location }}</small>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if ($lost->image_path)
+                                            <img src="{{ $lost->image_path }}" class="rounded" width="40" height="40" style="object-fit: cover;" alt="{{ $lost->title }}">
+                                        @endif
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ $lost->title }}</div>
+                                            <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i> Lost: {{ $lost->location }}</small>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">

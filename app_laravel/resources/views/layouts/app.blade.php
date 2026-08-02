@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Barako Track | UB Campus Lost & Found')</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('logo/favicon.png') }}">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -26,8 +28,10 @@
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <div class="sidebar-brand">
-            <h4>BARAKO <span>TRACK</span></h4>
+        <div class="sidebar-brand d-flex align-items-center gap-2">
+            <img src="{{ asset('logo/favicon.png') }}" width="32" height="32" style="object-fit: contain;"
+                alt="Barako Track Logo">
+            <h5 class="m-0">BARAKO <span>TRACK</span></h5>
         </div>
         <div class="sidebar-menu">
             @if ($userRole === 'admin')
@@ -60,29 +64,29 @@
                 <div class="nav-label">Student Main Menu</div>
                 <a href="{{ route('student.dashboard') }}"
                     class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2-fill"></i> Dashboard Overview
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
                 </a>
                 <a href="{{ route('student.found-items') }}"
                     class="nav-link {{ request()->routeIs('student.found-items') ? 'active' : '' }}">
-                    <i class="bi bi-box-seam-fill"></i> Found Items Directory
+                    <i class="bi bi-box-seam-fill"></i> Found Items
                 </a>
                 <a href="{{ route('student.lost-reports') }}"
                     class="nav-link {{ request()->routeIs('student.lost-reports') ? 'active' : '' }}">
-                    <i class="bi bi-card-checklist"></i> My Reported Lost Items
+                    <i class="bi bi-card-checklist"></i> My Lost Reports
                 </a>
                 <a href="{{ route('student.matcher') }}"
                     class="nav-link {{ request()->routeIs('student.matcher') ? 'active' : '' }}">
-                    <i class="bi bi-cpu-fill text-warning"></i> CNN AI Visual Matcher
+                    <i class="bi bi-cpu-fill"></i> AI Matcher
                 </a>
                 <a href="{{ route('student.claims') }}"
                     class="nav-link {{ request()->routeIs('student.claims') ? 'active' : '' }}">
-                    <i class="bi bi-shield-check"></i> My Claims Tracker
+                    <i class="bi bi-shield-check"></i> My Claims
                 </a>
 
                 <div class="nav-label">Actions</div>
                 <a href="#" class="nav-link text-warning" data-bs-toggle="modal"
                     data-bs-target="#reportLostModal">
-                    <i class="bi bi-file-earmark-plus-fill"></i> Report Lost Item
+                    <i class="bi bi-file-earmark-plus-fill text-warning"></i> Report Lost Item
                 </a>
             @endif
         </div>
@@ -208,7 +212,7 @@
                                 placeholder="Describe color, brand, scratches, wallpaper, contents..." required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Item Photo (Optional - Used for CNN AI Matcher)</label>
+                            <label class="form-label fw-bold">Item Photo (Used for CNN AI Matcher)</label>
                             <input type="file" name="image" class="form-control" accept="image/*">
                         </div>
                     </div>
@@ -332,40 +336,65 @@
         <div class="chatbot-widget">
             <div class="chatbot-box hidden" id="chatbotBox">
                 <div class="chatbot-header">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-robot fs-5 text-warning"></i>
+                    <div class="chatbot-header-info">
+                        <div class="chatbot-avatar-header">
+                            <i class="bi bi-robot"></i>
+                        </div>
                         <div>
                             <h6 class="m-0">Brahmmy AI Assistant</h6>
-                            <small class="text-white-50" style="font-size: 0.7rem;">UB Lost & Found Guide</small>
+                            <small class="text-white-50" style="font-size: 0.72rem;">
+                                <span class="online-dot"></span> Online • UB Campus Guide
+                            </small>
                         </div>
                     </div>
-                    <button class="btn-close btn-close-white btn-sm" onclick="toggleChatbot()"></button>
+                    <div class="d-flex align-items-center gap-1">
+                        <button type="button" class="btn btn-sm text-white-50 p-1 me-1" title="Clear Chat"
+                            onclick="clearChat()">
+                            <i class="bi bi-arrow-counterclockwise fs-6"></i>
+                        </button>
+                        <button type="button" class="btn-close btn-close-white btn-sm"
+                            onclick="toggleChatbot()"></button>
+                    </div>
                 </div>
+
                 <div class="chatbot-messages" id="chatbotMessages">
-                    <div class="chat-bubble bot">
-                        Hello! I'm <strong>Brahmmy</strong>, your official UB Barako Track assistant. How can I help you
-                        today?
+                    <div class="chat-message-row bot">
+                        <div class="bot-avatar-small"><i class="bi bi-robot"></i></div>
+                        <div class="chat-bubble bot">
+                            Hello! I'm <strong>Brahmmy</strong>, your official UB Barako Track AI Assistant. How can I
+                            help you recover or report an item today?
+                        </div>
                     </div>
                 </div>
-                <div class="p-2 bg-light border-top d-flex gap-1 overflow-auto">
-                    <div class="suggestion-chip" onclick="sendChatQuery('How to report a lost item?')">Report Lost
+
+                <div class="chatbot-suggestions" id="chatbotSuggestions">
+                    <div class="suggestion-chip" onclick="sendChatQuery('How to report a lost item?')">
+                        <i class="bi bi-file-earmark-plus me-1"></i> Report Lost
                     </div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('Where is the lost and found office?')">SAO
-                        Office</div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('How to claim an item?')">Claim Info</div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('Office Hours')">Hours</div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('Where is the lost and found office?')">
+                        <i class="bi bi-geo-alt me-1"></i> SAO Office
+                    </div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('How to claim an item?')">
+                        <i class="bi bi-shield-check me-1"></i> Claim Info
+                    </div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('Office Hours')">
+                        <i class="bi bi-clock me-1"></i> Office Hours
+                    </div>
                 </div>
+
                 <div class="chatbot-footer">
-                    <div class="input-group">
-                        <input type="text" id="chatInput" class="form-control form-control-sm"
-                            placeholder="Ask Brahmmy anything..." onkeypress="handleKeyPress(event)">
-                        <button class="btn btn-sm btn-primary-custom" onclick="sendChat()"><i
-                                class="bi bi-send-fill"></i></button>
+                    <div class="chatbot-input-group">
+                        <input type="text" id="chatInput" placeholder="Ask Brahmmy anything..."
+                            onkeypress="handleKeyPress(event)">
+                        <button type="button" class="chatbot-send-btn" onclick="sendChat()" title="Send Message">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="chatbot-btn" onclick="toggleChatbot()">
-                <i class="bi bi-chat-dots-fill"></i>
+
+            <div class="chatbot-btn" id="chatbotToggleBtn" onclick="toggleChatbot()" title="Chat with Brahmmy AI">
+                <i class="bi bi-chat-dots-fill" id="chatBtnIcon"></i>
             </div>
         </div>
     @endif
@@ -385,7 +414,51 @@
         }
 
         function toggleChatbot() {
-            document.getElementById('chatbotBox').classList.toggle('hidden');
+            const box = document.getElementById('chatbotBox');
+            const icon = document.getElementById('chatBtnIcon');
+            box.classList.toggle('hidden');
+            if (icon) {
+                if (box.classList.contains('hidden')) {
+                    icon.className = 'bi bi-chat-dots-fill';
+                } else {
+                    icon.className = 'bi bi-x-lg';
+                    setTimeout(() => {
+                        const input = document.getElementById('chatInput');
+                        if (input) input.focus();
+                    }, 150);
+                }
+            }
+        }
+
+        function formatMarkdown(text) {
+            if (!text) return '';
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // Convert **bold** to <strong>bold</strong>
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // Convert *italic* to <em>italic</em>
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Convert newlines to <br>
+            html = html.replace(/\n/g, '<br>');
+
+            return html;
+        }
+
+        function clearChat() {
+            const chatBox = document.getElementById('chatbotMessages');
+            chatBox.innerHTML = `
+                <div class="chat-message-row bot">
+                    <div class="bot-avatar-small"><i class="bi bi-robot"></i></div>
+                    <div class="chat-bubble bot">
+                        Chat history cleared! How can I assist you, student?
+                    </div>
+                </div>
+            `;
         }
 
         function handleKeyPress(e) {
@@ -404,11 +477,29 @@
 
             const chatBox = document.getElementById('chatbotMessages');
 
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-bubble user';
-            userMsg.innerText = query;
-            chatBox.appendChild(userMsg);
+            // User Message
+            const userRow = document.createElement('div');
+            userRow.className = 'chat-message-row user';
+            userRow.innerHTML = `<div class="chat-bubble user">${formatMarkdown(query)}</div>`;
+            chatBox.appendChild(userRow);
             input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Typing Indicator
+            const typingRow = document.createElement('div');
+            typingRow.className = 'chat-message-row bot';
+            typingRow.id = 'typingIndicatorRow';
+            typingRow.innerHTML = `
+                <div class="bot-avatar-small"><i class="bi bi-robot"></i></div>
+                <div class="chat-bubble bot py-2">
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            `;
+            chatBox.appendChild(typingRow);
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
@@ -424,18 +515,45 @@
                     })
                 });
                 const data = await res.json();
+
+                const typingEl = document.getElementById('typingIndicatorRow');
+                if (typingEl) typingEl.remove();
+
                 if (data.status === 'success') {
-                    const botMsg = document.createElement('div');
-                    botMsg.className = 'chat-bubble bot';
-                    botMsg.innerHTML = data.response.message.replace(/\n/g, '<br>');
-                    chatBox.appendChild(botMsg);
+                    const botRow = document.createElement('div');
+                    botRow.className = 'chat-message-row bot';
+                    botRow.innerHTML = `
+                        <div class="bot-avatar-small"><i class="bi bi-robot"></i></div>
+                        <div class="chat-bubble bot">${formatMarkdown(data.response.message)}</div>
+                    `;
+                    chatBox.appendChild(botRow);
+
+                    // Dynamic Suggestion Chips (2x2 Grid)
+                    if (data.response.suggestions && data.response.suggestions.length > 0) {
+                        const sugBox = document.getElementById('chatbotSuggestions');
+                        if (sugBox) {
+                            const topSuggestions = data.response.suggestions.slice(0, 4);
+                            sugBox.innerHTML = topSuggestions.map(s => `
+                                <div class="suggestion-chip" onclick="sendChatQuery('${s.replace(/'/g, "\\'")}')">
+                                    <i class="bi bi-chat-text me-1"></i> ${s}
+                                </div>
+                            `).join('');
+                        }
+                    }
                 }
             } catch (err) {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-bubble bot';
-                botMsg.innerHTML =
-                    "I am Brahmmy! You can report lost items online, view found items, or visit SAO (Mon-Fri 8AM-5PM).";
-                chatBox.appendChild(botMsg);
+                const typingEl = document.getElementById('typingIndicatorRow');
+                if (typingEl) typingEl.remove();
+
+                const botRow = document.createElement('div');
+                botRow.className = 'chat-message-row bot';
+                botRow.innerHTML = `
+                    <div class="bot-avatar-small"><i class="bi bi-robot"></i></div>
+                    <div class="chat-bubble bot">
+                        I am <strong>Brahmmy</strong>! You can report lost items online, view found items, or visit SAO (Mon-Fri 8AM-5PM).
+                    </div>
+                `;
+                chatBox.appendChild(botRow);
             }
             chatBox.scrollTop = chatBox.scrollHeight;
         }
