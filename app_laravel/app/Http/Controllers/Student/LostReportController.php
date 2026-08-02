@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers\Student;
+
+use App\Http\Controllers\Controller;
+use App\Models\LostItem;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+class LostReportController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            $user = \App\Models\User::where('role', 'student')->first();
+        }
+
+        $categories = Category::all();
+        $lostReports = $user ? LostItem::with('category')->where('user_id', $user->id)->latest()->get() : collect();
+
+        return view('student.lost_reports', compact('lostReports', 'categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'date_lost' => 'required|date',
+            'location' => 'required|string|max:255',
+            'image' => 'nullable|image|max:5120',
+        ]);
+
+        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+
+        $imagePath = null;
+        $featureVector = null;
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Save directly into public/images
+            $file->move(public_path('images'), $filename);
+            $imagePath = '/images/' . $filename;
+
+            // Extract CNN feature vector via Python service
+            try {
+                $fullPath = public_path('images/' . $filename);
+                $response = Http::attach(
+                    'image', file_get_contents($fullPath), $filename
+                )->post('http://127.0.0.1:5000/extract-features');
+
+                if ($response->successful()) {
+                    $featureVector = $response->json('feature_vector');
+                }
+            } catch (\Exception $e) {
+                // Feature extraction fallback
+            }
+        }
+
+        LostItem::create([
+            'user_id' => $user->id,
+            'category_id' => $validated['category_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'date_lost' => $validated['date_lost'],
+            'location' => $validated['location'],
+            'image_path' => $imagePath,
+            'feature_vector' => $featureVector,
+            'status' => 'open'
+        ]);
+
+        return redirect()->back()->with('success', 'Lost item report submitted and image saved to public/images!');
+    }
+
+    public function resolve($id)
+    {
+        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+        $item = LostItem::where('user_id', $user->id)->findOrFail($id);
+        
+        $item->status = 'resolved';
+        $item->save();
+
+        return redirect()->back()->with('success', 'Lost item report marked as resolved!');
+    }
+}
