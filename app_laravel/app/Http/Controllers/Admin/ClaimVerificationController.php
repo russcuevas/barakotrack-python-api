@@ -7,12 +7,22 @@ use App\Models\Claim;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Services\CNNEngineService;
+
 class ClaimVerificationController extends Controller
 {
     public function index()
     {
         $pendingClaims = Claim::with(['foundItem', 'lostItem', 'user'])->where('status', 'pending')->latest()->get();
         $processedClaims = Claim::with(['foundItem', 'lostItem', 'user', 'verifier'])->whereIn('status', ['approved', 'rejected'])->latest()->get();
+
+        foreach ($pendingClaims as $claim) {
+            $claim->match_score = CNNEngineService::computeClaimSimilarity($claim);
+        }
+
+        foreach ($processedClaims as $claim) {
+            $claim->match_score = CNNEngineService::computeClaimSimilarity($claim);
+        }
 
         return view('admin.claims', compact('pendingClaims', 'processedClaims'));
     }

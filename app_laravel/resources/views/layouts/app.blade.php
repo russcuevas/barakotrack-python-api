@@ -39,25 +39,25 @@
                 <div class="nav-label">SAO Command Center</div>
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2-fill"></i> Admin Dashboard
+                    <i class="bi bi-grid-1x2-fill"></i> Dashboard
                 </a>
                 <a href="{{ route('admin.claims') }}"
                     class="nav-link {{ request()->routeIs('admin.claims') ? 'active' : '' }}">
-                    <i class="bi bi-shield-exclamation text-warning"></i> Pending Verification Claims
+                    <i class="bi bi-shield-exclamation"></i> Pending Claims
                 </a>
                 <a href="{{ route('admin.inventory') }}"
                     class="nav-link {{ request()->routeIs('admin.inventory') ? 'active' : '' }}">
-                    <i class="bi bi-archive-fill"></i> SAO Storage Inventory
+                    <i class="bi bi-archive-fill"></i> Found Inventory
                 </a>
                 <a href="{{ route('admin.lost-reports') }}"
                     class="nav-link {{ request()->routeIs('admin.lost-reports') ? 'active' : '' }}">
-                    <i class="bi bi-journal-text"></i> All Lost Item Reports
+                    <i class="bi bi-journal-text"></i> Lost Reports
                 </a>
 
                 <div class="nav-label">Actions</div>
                 <a href="#" class="nav-link text-warning" data-bs-toggle="modal"
                     data-bs-target="#reportFoundModal">
-                    <i class="bi bi-plus-circle-fill"></i> Register Found Item
+                    <i class="bi bi-plus-circle-fill text-warning"></i> Add Found Item
                 </a>
             @else
                 <!-- Student Menu -->
@@ -226,7 +226,7 @@
         </div>
     </div>
 
-    <!-- Modal: Register Found Item (Admin) -->
+    <!-- Modal: Add Found Item (Admin) -->
     <div class="modal fade" id="reportFoundModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

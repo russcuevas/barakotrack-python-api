@@ -88,4 +88,49 @@ class LostReportController extends Controller
 
         return redirect()->back()->with('success', 'Lost item report marked as resolved!');
     }
+
+    public function scanCnn($id)
+    {
+        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+        $lostItem = LostItem::with('category')->where('user_id', $user->id)->findOrFail($id);
+
+        $availableFound = \App\Models\FoundItem::with('category')
+            ->whereIn('status', ['available', 'claim_pending'])
+            ->get();
+
+        $matches = [];
+
+        foreach ($availableFound as $found) {
+            $score = \App\Services\CNNEngineService::computeItemSimilarity($lostItem, $found);
+
+            if ($score > 45.0) {
+                $matches[] = [
+                    'id' => $found->id,
+                    'title' => $found->title,
+                    'description' => $found->description,
+                    'location' => $found->location,
+                    'storage_location' => $found->storage_location,
+                    'date_found' => $found->date_found->format('M d, Y'),
+                    'image_path' => $found->image_path,
+                    'score' => $score,
+                    'status' => $found->status
+                ];
+            }
+        }
+
+        usort($matches, function($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'lost_item' => [
+                'id' => $lostItem->id,
+                'title' => $lostItem->title,
+                'location' => $lostItem->location,
+                'image_path' => $lostItem->image_path
+            ],
+            'matches' => $matches
+        ]);
+    }
 }

@@ -22,6 +22,8 @@
 
 ---
 
+
+
 ### Project Overview
 Barako Track is a web-based Smart Lost and Found Management System intended for a school campus environment. The platform centralizes the process of reporting lost items, submitting found items, searching item records, requesting claims, and monitoring report status. Instead of relying only on manual logbooks, office visits, or informal announcements, Barako Track gives students and campus personnel a clear digital process for item recovery.
 

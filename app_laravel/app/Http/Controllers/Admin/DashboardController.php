@@ -7,6 +7,8 @@ use App\Models\FoundItem;
 use App\Models\Claim;
 use App\Models\LostItem;
 
+use App\Services\CNNEngineService;
+
 class DashboardController extends Controller
 {
     public function index()
@@ -16,11 +18,15 @@ class DashboardController extends Controller
         $approvedClaimsCount = Claim::where('status', 'approved')->count();
         $totalLostReports = LostItem::count();
 
-        $recentPendingClaims = Claim::with(['foundItem', 'user'])
+        $recentPendingClaims = Claim::with(['foundItem', 'lostItem', 'user'])
             ->where('status', 'pending')
             ->latest()
             ->take(4)
             ->get();
+
+        foreach ($recentPendingClaims as $claim) {
+            $claim->match_score = CNNEngineService::computeClaimSimilarity($claim);
+        }
 
         $recentInventory = FoundItem::with(['category', 'user'])
             ->latest()

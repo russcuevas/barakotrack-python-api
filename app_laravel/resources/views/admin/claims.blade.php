@@ -21,11 +21,16 @@
                     <th>Student Claimant</th>
                     <th>Item to Claim</th>
                     <th>Proof Description & Evidence</th>
+                    <th>CNN AI Match Score</th>
                     <th>Verification Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($pendingClaims as $claim)
+                @php
+                    $score = $claim->match_score ?? 0;
+                    $badgeColor = $score >= 85 ? 'bg-success' : ($score >= 50 ? 'bg-warning text-dark' : 'bg-secondary');
+                @endphp
                 <tr>
                     <td><strong class="text-warning">#CLM-{{ $claim->id }}</strong></td>
                     <td>
@@ -34,11 +39,18 @@
                         <small class="text-muted"><i class="bi bi-telephone"></i> {{ $claim->user->phone ?? 'N/A' }}</small>
                     </td>
                     <td>
-                        <div class="fw-bold text-primary">{{ $claim->foundItem->title ?? 'Found Item' }}</div>
-                        <small class="text-muted"><i class="bi bi-geo-alt"></i> Found: {{ $claim->foundItem->location ?? 'Campus' }}</small><br>
-                        <span class="badge bg-secondary"><i class="bi bi-building"></i> {{ $claim->foundItem->storage_location ?? 'SAO' }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            @if(optional($claim->foundItem)->image_path)
+                                <img src="{{ $claim->foundItem->image_path }}" class="rounded border shadow-sm" width="50" height="50" style="object-fit: cover;" alt="{{ $claim->foundItem->title }}">
+                            @endif
+                            <div>
+                                <div class="fw-bold text-primary">{{ $claim->foundItem->title ?? 'Found Item' }}</div>
+                                <small class="text-muted"><i class="bi bi-geo-alt"></i> Found: {{ $claim->foundItem->location ?? 'Campus' }}</small><br>
+                                <span class="badge bg-secondary"><i class="bi bi-building"></i> {{ $claim->foundItem->storage_location ?? 'SAO' }}</span>
+                            </div>
+                        </div>
                     </td>
-                    <td style="max-width: 280px;">
+                    <td style="max-width: 260px;">
                         <p class="fs-7 mb-2 bg-light p-2 rounded border">{{ $claim->proof_description }}</p>
                         @if($claim->proof_image)
                             <button class="btn btn-xs btn-outline-primary py-1 px-2 fs-7 fw-semibold"
@@ -47,7 +59,14 @@
                             </button>
                         @endif
                     </td>
-                    <td style="width: 260px;">
+                    <td>
+                        @if($score > 0)
+                            <span class="badge {{ $badgeColor }} p-2 fw-bold"><i class="bi bi-cpu-fill me-1"></i> {{ $score }}% Match</span>
+                        @else
+                            <span class="badge bg-light text-dark border"><i class="bi bi-eye"></i> Manual Review</span>
+                        @endif
+                    </td>
+                    <td style="width: 250px;">
                         <!-- Approve Form -->
                         <form action="{{ route('admin.claims.approve', $claim->id) }}" method="POST" class="mb-2">
                             @csrf
@@ -68,7 +87,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center text-muted py-4"><i class="bi bi-check2-all text-success me-1"></i> No pending claims requiring verification.</td>
+                    <td colspan="6" class="text-center text-muted py-4"><i class="bi bi-check2-all text-success me-1"></i> No pending claims requiring verification.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -87,6 +106,7 @@
                     <th>Student</th>
                     <th>Target Found Item</th>
                     <th>Proof Photo</th>
+                    <th>CNN AI Match</th>
                     <th>Status</th>
                     <th>Admin Notes</th>
                     <th>Verified By</th>
@@ -94,10 +114,24 @@
             </thead>
             <tbody>
                 @forelse($processedClaims as $pClaim)
+                @php
+                    $pScore = $pClaim->match_score ?? 0;
+                    $pBadgeColor = $pScore >= 85 ? 'bg-success' : ($pScore >= 50 ? 'bg-warning text-dark' : 'bg-secondary');
+                @endphp
                 <tr>
                     <td><strong>#CLM-{{ $pClaim->id }}</strong></td>
                     <td>{{ $pClaim->user->name ?? 'Student' }}</td>
-                    <td>{{ $pClaim->foundItem->title ?? 'Item' }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            @if(optional($pClaim->foundItem)->image_path)
+                                <img src="{{ $pClaim->foundItem->image_path }}" class="rounded border shadow-sm" width="40" height="40" style="object-fit: cover;" alt="{{ $pClaim->foundItem->title }}">
+                            @endif
+                            <div>
+                                <div class="fw-bold text-dark">{{ $pClaim->foundItem->title ?? 'Item' }}</div>
+                                <small class="text-muted"><i class="bi bi-building"></i> {{ $pClaim->foundItem->storage_location ?? 'SAO' }}</small>
+                            </div>
+                        </div>
+                    </td>
                     <td>
                         @if($pClaim->proof_image)
                             <button class="btn btn-xs btn-outline-secondary py-0 px-2 fs-7"
@@ -106,6 +140,13 @@
                             </button>
                         @else
                             <small class="text-muted">None</small>
+                        @endif
+                    </td>
+                    <td>
+                        @if($pScore > 0)
+                            <span class="badge {{ $pBadgeColor }}"><i class="bi bi-cpu-fill me-1"></i> {{ $pScore }}%</span>
+                        @else
+                            <small class="text-muted">N/A</small>
                         @endif
                     </td>
                     <td>
@@ -120,7 +161,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-3">No processed claims history yet.</td>
+                    <td colspan="8" class="text-center text-muted py-3">No processed claims history yet.</td>
                 </tr>
                 @endforelse
             </tbody>

@@ -10,6 +10,8 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
+use App\Services\CNNEngineService;
+
 class DashboardController extends Controller
 {
     public function index()
@@ -46,7 +48,7 @@ class DashboardController extends Controller
                 $bestScoreForThisLostItem = 0.0;
 
                 foreach ($availableFound as $found) {
-                    $score = $this->calculateSimilarity($lost, $found);
+                    $score = CNNEngineService::computeItemSimilarity($lost, $found);
 
                     // STRICT FILTER: Match score > 45.0%
                     if ($score > 45.0) {

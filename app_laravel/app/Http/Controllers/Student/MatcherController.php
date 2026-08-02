@@ -8,6 +8,8 @@ use App\Models\FoundItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
+use App\Services\CNNEngineService;
+
 class MatcherController extends Controller
 {
     public function index()
@@ -35,7 +37,7 @@ class MatcherController extends Controller
 
             foreach ($foundItems as $found) {
                 // Calculate hybrid similarity score (CNN Image + Description & Category)
-                $score = $this->calculateSimilarity($lost, $found);
+                $score = CNNEngineService::computeItemSimilarity($lost, $found);
 
                 // STRICT RULE: Only display matches strictly greater than 45.0%
                 if ($score > 45.0) {
