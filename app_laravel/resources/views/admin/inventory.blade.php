@@ -3,14 +3,14 @@
 @section('title', 'SAO Storage Inventory Directory | SAO Admin')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
             <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-archive-fill me-2"></i> SAO Storage
                 Inventory Directory</h4>
-            <span class="text-muted">Register surrendered found items, assign cabinet storage locations, and update
+            <span class="text-muted fs-7">Register surrendered found items, assign cabinet storage locations, and update
                 statuses.</span>
         </div>
-        <button class="btn btn-primary-custom px-3 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportFoundModal">
+        <button class="btn btn-primary-custom btn-sm px-3 py-2 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#reportFoundModal">
             <i class="bi bi-box-arrow-in-down me-1"></i> Add Found Item
         </button>
     </div>

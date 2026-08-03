@@ -49,7 +49,7 @@
             <span class="text-muted">Browse items surrendered to SAO office and submit claim requests.</span>
         </div>
         <div>
-            <span class="badge bg-primary-custom p-2 px-3 fs-7 shadow-sm">
+            <span class="badge bg-primary p-2 px-3 fs-7 shadow-sm">
                 <i class="bi bi-boxes me-1"></i> {{ $foundItems->count() }} Item(s) Loaded
             </span>
         </div>
@@ -155,11 +155,14 @@
                                     <i class="bi bi-shield-check me-1"></i> Submit Claim
                                 </button>
                             @elseif($item->status === 'ready_for_pickup')
-                                <button class="btn btn-sm btn-info text-dark disabled fw-bold" disabled><i class="bi bi-box-seam me-1"></i> Ready for Pick-up</button>
+                                <button class="btn btn-sm btn-info text-dark disabled fw-bold" disabled><i
+                                        class="bi bi-box-seam me-1"></i> Ready for Pick-up</button>
                             @elseif($item->status === 'claimed')
-                                <button class="btn btn-sm btn-secondary disabled fw-bold" disabled><i class="bi bi-check2-all me-1"></i> Claimed</button>
+                                <button class="btn btn-sm btn-secondary disabled fw-bold" disabled><i
+                                        class="bi bi-check2-all me-1"></i> Claimed</button>
                             @else
-                                <button class="btn btn-sm btn-outline-secondary disabled fw-bold" disabled>Under Claim</button>
+                                <button class="btn btn-sm btn-outline-secondary disabled fw-bold" disabled>Under
+                                    Claim</button>
                             @endif
                         </div>
                     </div>
@@ -189,11 +192,13 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold" id="imagePreviewTitle"><i class="bi bi-image me-2 text-warning"></i> Item Image Preview</h5>
+                    <h5 class="modal-title fw-bold" id="imagePreviewTitle"><i class="bi bi-image me-2 text-warning"></i>
+                        Item Image Preview</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-0 text-center bg-dark">
-                    <img id="previewModalImage" src="" class="img-fluid rounded-bottom" style="max-height: 75vh; object-fit: contain;" alt="Image Preview">
+                    <img id="previewModalImage" src="" class="img-fluid rounded-bottom"
+                        style="max-height: 75vh; object-fit: contain;" alt="Image Preview">
                 </div>
             </div>
         </div>
@@ -204,7 +209,8 @@
             if (!src || src.startsWith('data:image/svg+xml')) return;
             const modalEl = document.getElementById('imagePreviewModal');
             if (modalEl) {
-                document.getElementById('imagePreviewTitle').innerHTML = `<i class="bi bi-image me-2 text-warning"></i> ${title || 'Item Image Preview'}`;
+                document.getElementById('imagePreviewTitle').innerHTML =
+                    `<i class="bi bi-image me-2 text-warning"></i> ${title || 'Item Image Preview'}`;
                 document.getElementById('previewModalImage').src = src;
                 const modal = new bootstrap.Modal(modalEl);
                 modal.show();

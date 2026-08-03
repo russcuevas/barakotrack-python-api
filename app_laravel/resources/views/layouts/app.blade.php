@@ -26,6 +26,9 @@
         $categories = \App\Models\Category::all();
     @endphp
 
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <div class="sidebar-brand d-flex align-items-center gap-2">
@@ -95,37 +98,44 @@
     <!-- Main Content Area -->
     <div class="main-wrapper">
         <!-- Top Header -->
-        <header class="top-header d-flex justify-content-between align-items-center px-4">
-            <div>
-                <h5 class="fw-bold m-0" style="color: var(--primary-color);">UB Campus</h5>
-                <small class="text-muted">University of Batangas • Care. Connect. Recover.</small>
+        <header class="top-header d-flex justify-content-between align-items-center px-2 px-sm-3 px-md-4">
+            <div class="d-flex align-items-center gap-2">
+                <!-- Mobile Sidebar Toggle Button -->
+                <button class="btn btn-light border shadow-sm d-lg-none py-1 px-2 me-1" id="sidebarToggle" type="button" aria-label="Toggle Navigation Sidebar">
+                    <i class="bi bi-list fs-4 text-dark"></i>
+                </button>
+
+                <div>
+                    <h5 class="fw-bold m-0 fs-6" style="color: var(--primary-color);">UB Campus</h5>
+                    <small class="text-muted d-none d-md-inline" style="font-size: 0.75rem;">University of Batangas • Care. Connect. Recover.</small>
+                </div>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
                 <!-- User Info Display -->
                 <div class="d-flex align-items-center gap-2">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode($authUser->name) }}&background={{ $userRole === 'admin' ? '1e1e2d' : '752738' }}&color=fec452"
-                        class="rounded-circle" width="38" height="38" alt="User">
-                    <div>
-                        <div class="fw-bold fs-7">{{ $authUser->name }}</div>
-                        <div class="text-muted fs-7" style="font-size: 0.75rem;">
+                        class="rounded-circle" width="34" height="34" alt="User">
+                    <div class="d-none d-md-block text-start" style="line-height: 1.2;">
+                        <div class="fw-bold fs-7 text-truncate" style="max-width: 140px;">{{ $authUser->name }}</div>
+                        <div class="text-muted fs-7" style="font-size: 0.7rem;">
                             @if ($userRole === 'admin')
-                                <span class="badge bg-danger">SAO Administrator</span>
+                                <span class="badge bg-danger p-1">Admin</span>
                             @else
-                                <span class="badge bg-secondary">Student
-                                    ({{ $authUser->student_id_number ?? 'UB-2024' }})</span>
+                                <span class="badge bg-secondary p-1">Student</span>
                             @endif
                         </div>
                     </div>
                 </div>
 
-                <div class="vr"></div>
+                <div class="vr d-none d-md-block" style="height: 20px;"></div>
 
                 <!-- Logout Button -->
                 <form action="{{ route('logout') }}" method="POST" class="m-0">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-danger px-3">
-                        <i class="bi bi-box-arrow-right me-1"></i> Logout
+                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 px-md-3" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="d-none d-sm-inline ms-1">Logout</span>
                     </button>
                 </form>
             </div>
@@ -647,6 +657,34 @@
                 previewImg.src = '#';
             }
         }
+
+        // Mobile Sidebar Responsiveness Handler
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            if (sidebarToggle && sidebar && backdrop) {
+                sidebarToggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('show');
+                    backdrop.classList.toggle('show');
+                });
+
+                backdrop.addEventListener('click', function () {
+                    sidebar.classList.remove('show');
+                    backdrop.classList.remove('show');
+                });
+
+                document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                    link.addEventListener('click', function () {
+                        if (window.innerWidth < 992) {
+                            sidebar.classList.remove('show');
+                            backdrop.classList.remove('show');
+                        }
+                    });
+                });
+            }
+        });
     </script>
 </body>
 

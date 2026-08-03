@@ -3,7 +3,7 @@
 @section('title', 'My Claims Tracker | Barako Track')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-shield-check me-2 text-warning"></i> My Submitted Claims Tracker</h4>
         <span class="text-muted">Monitor SAO verification decisions and instructions for picking up your claimed items.</span>

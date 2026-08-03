@@ -3,28 +3,28 @@
 @section('title', 'Barako Track | SAO Admin Control Panel')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
             <h4 class="fw-bold m-0 text-danger"><i class="bi bi-shield-lock-fill me-2"></i> Admin Dashboard</h4>
-            <span class="text-muted">Overview of campus found inventory, pending verification claims, and student
+            <span class="text-muted fs-7">Overview of campus found inventory, pending verification claims, and student
                 reports.</span>
         </div>
-        <button class="btn btn-secondary-custom px-3 py-2 fw-bold shadow-sm" data-bs-toggle="modal"
+        <button class="btn btn-secondary-custom btn-sm px-3 py-2 fw-bold shadow-sm" data-bs-toggle="modal"
             data-bs-target="#reportFoundModal">
             <i class="bi bi-box-arrow-in-down me-1"></i> Add Found Item
         </button>
     </div>
 
     <!-- Admin Stat Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
+    <div class="row g-3 g-md-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3" style="border-left-color: #1e1e2d;">
                 <div class="text-muted fs-7 fw-semibold">Found Items in Storage</div>
                 <h2 class="fw-bold my-1 text-dark">{{ $storageCount }}</h2>
                 <small class="text-muted"><i class="bi bi-archive"></i> Ready for student claim</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3" style="border-left-color: #fec452;">
                 <div class="text-muted fs-7 fw-semibold">Pending Claim Verification</div>
                 <h2 class="fw-bold my-1 text-warning">{{ $pendingClaimsCount }}</h2>
@@ -32,14 +32,14 @@
                     decision</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3" style="border-left-color: #0dcaf0;">
                 <div class="text-muted fs-7 fw-semibold">Ready for Pick-up</div>
                 <h2 class="fw-bold my-1 text-info">{{ $readyForPickupCount }}</h2>
                 <small class="text-info fw-semibold"><i class="bi bi-box-seam"></i> Staged at SAO Office</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3" style="border-left-color: #198754;">
                 <div class="text-muted fs-7 fw-semibold">Claimed Reports</div>
                 <h2 class="fw-bold my-1 text-success">{{ $claimedReportsCount }}</h2>

@@ -3,10 +3,10 @@
 @section('title', 'All Campus Lost Item Reports | SAO Admin')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
     <div>
         <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-journal-text me-2"></i> All Campus Lost Item Reports</h4>
-        <span class="text-muted">Monitor all student lost item reports across University of Batangas campus.</span>
+        <span class="text-muted fs-7">Monitor all student lost item reports across University of Batangas campus.</span>
     </div>
 </div>
 

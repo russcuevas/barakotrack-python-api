@@ -3,40 +3,40 @@
 @section('title', 'Barako Track | Student Dashboard')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
             <h4 class="fw-bold m-0" style="color: var(--primary-color);">Welcome back, {{ $user->name ?? 'Student' }}!</h4>
-            <span class="text-muted">Manage your campus lost item reports and check found items directory.</span>
+            <span class="text-muted fs-7">Manage your campus lost item reports and check found items directory.</span>
         </div>
-        <button class="btn btn-primary-custom px-3 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportLostModal">
+        <button class="btn btn-primary-custom btn-sm px-3 py-2 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#reportLostModal">
             <i class="bi bi-plus-circle-fill me-1"></i> Report New Lost Item
         </button>
     </div>
 
     <!-- Stats Cards Grid -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
+    <div class="row g-3 g-md-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3">
                 <div class="text-muted fs-7 fw-semibold">Active Lost Reports</div>
                 <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $lostItemsCount }}</h2>
                 <small class="text-danger fw-semibold"><i class="bi bi-arrow-up-right"></i> Campus searches active</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card secondary p-3">
                 <div class="text-muted fs-7 fw-semibold">Found Items in Storage</div>
                 <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $foundItemsCount }}</h2>
                 <small class="text-success fw-semibold"><i class="bi bi-shield-lock"></i> Secured at SAO Office</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card p-3">
                 <div class="text-muted fs-7 fw-semibold">My Pending Claims</div>
                 <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $pendingClaimsCount }}</h2>
                 <small class="text-warning fw-semibold"><i class="bi bi-clock-history"></i> SAO verification in progress</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card card-custom stat-card secondary p-3">
                 <div class="text-muted fs-7 fw-semibold">CNN AI Matches Found</div>
                 <h2 class="fw-bold my-1 text-success">{{ $aiMatchesCount }}</h2>

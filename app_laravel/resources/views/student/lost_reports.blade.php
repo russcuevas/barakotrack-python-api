@@ -48,7 +48,7 @@
         }
     </style>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-card-checklist me-2"></i> My Reported
                 Lost Items</h4>
