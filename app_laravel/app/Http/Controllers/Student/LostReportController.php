@@ -27,13 +27,28 @@ class LostReportController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required',
+            'other_category' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'date_lost' => 'required|date',
             'location' => 'required|string|max:255',
             'image' => 'nullable|image|max:5120',
         ]);
+
+        $categoryId = $request->category_id;
+        if ($request->category_id === 'others' && $request->filled('other_category')) {
+            $catName = trim($request->other_category);
+            $cat = Category::firstOrCreate(
+                ['slug' => \Illuminate\Support\Str::slug($catName)],
+                [
+                    'name' => $catName,
+                    'icon' => 'bi-tag-fill',
+                    'description' => 'User defined custom category'
+                ]
+            );
+            $categoryId = $cat->id;
+        }
 
         $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
 
@@ -65,7 +80,7 @@ class LostReportController extends Controller
 
         LostItem::create([
             'user_id' => $user->id,
-            'category_id' => $validated['category_id'],
+            'category_id' => $categoryId,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'date_lost' => $validated['date_lost'],

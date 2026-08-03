@@ -114,6 +114,11 @@
                                 @elseif($item->status === 'claim_pending')
                                     <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i> Claim
                                         Pending</span>
+                                @elseif($item->status === 'ready_for_pickup')
+                                    <span class="badge bg-info text-dark"><i class="bi bi-box-seam me-1"></i> Ready for
+                                        Pick-up</span>
+                                @elseif($item->status === 'claimed')
+                                    <span class="badge bg-secondary"><i class="bi bi-check2-all me-1"></i> Claimed</span>
                                 @else
                                     <span
                                         class="badge bg-secondary">{{ str_replace('_', ' ', ucfirst($item->status)) }}</span>

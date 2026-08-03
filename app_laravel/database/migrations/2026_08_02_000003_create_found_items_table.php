@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('storage_location')->default('SAO Headquarters');
             $table->string('image_path')->nullable();
             $table->longText('feature_vector')->nullable();
-            $table->enum('status', ['available', 'claim_pending', 'claimed', 'disposed'])->default('available');
+            $table->string('status')->default('available');
             $table->timestamps();
         });
     }

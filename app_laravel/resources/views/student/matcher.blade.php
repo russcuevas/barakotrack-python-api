@@ -133,7 +133,7 @@
                     <div class="col-12">
                         <div class="alert alert-light border text-muted m-0 p-3">
                             <i class="bi bi-info-circle me-1"></i> No candidate items currently in storage meet the CNN
-                            visual similarity threshold (>45% match score) for this report.
+                            visual similarity threshold for this report.
                         </div>
                     </div>
                 @endforelse

@@ -40,6 +40,23 @@ class ClaimVerificationController extends Controller
         $claim->save();
 
         if ($claim->foundItem) {
+            $claim->foundItem->status = 'ready_for_pickup';
+            $claim->foundItem->save();
+        }
+
+        if ($claim->lostItem) {
+            $claim->lostItem->status = 'claim_pending';
+            $claim->lostItem->save();
+        }
+
+        return redirect()->back()->with('success', "Claim #{$claim->id} APPROVED! Found item tagged as 'Ready for Pick-up'.");
+    }
+
+    public function markClaimed(Request $request, $id)
+    {
+        $claim = Claim::findOrFail($id);
+
+        if ($claim->foundItem) {
             $claim->foundItem->status = 'claimed';
             $claim->foundItem->save();
         }
@@ -49,7 +66,7 @@ class ClaimVerificationController extends Controller
             $claim->lostItem->save();
         }
 
-        return redirect()->back()->with('success', "Claim #{$claim->id} APPROVED successfully!");
+        return redirect()->back()->with('success', "Claim #{$claim->id} item marked as Picked Up & Claimed!");
     }
 
     public function reject(Request $request, $id)

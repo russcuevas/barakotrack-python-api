@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\FoundItem;
 use App\Models\Claim;
 use App\Models\LostItem;
-
 use App\Services\CNNEngineService;
 
 class DashboardController extends Controller
@@ -15,8 +14,8 @@ class DashboardController extends Controller
     {
         $storageCount = FoundItem::where('status', 'available')->count();
         $pendingClaimsCount = Claim::where('status', 'pending')->count();
-        $approvedClaimsCount = Claim::where('status', 'approved')->count();
-        $totalLostReports = LostItem::count();
+        $readyForPickupCount = FoundItem::where('status', 'ready_for_pickup')->count();
+        $claimedReportsCount = FoundItem::where('status', 'claimed')->count();
 
         $recentPendingClaims = Claim::with(['foundItem', 'lostItem', 'user'])
             ->where('status', 'pending')
@@ -36,8 +35,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'storageCount',
             'pendingClaimsCount',
-            'approvedClaimsCount',
-            'totalLostReports',
+            'readyForPickupCount',
+            'claimedReportsCount',
             'recentPendingClaims',
             'recentInventory'
         ));

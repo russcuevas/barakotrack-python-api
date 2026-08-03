@@ -52,6 +52,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/claims', [AdminClaimVerificationController::class, 'index'])->name('claims');
     Route::post('/claims/{id}/approve', [AdminClaimVerificationController::class, 'approve'])->name('claims.approve');
     Route::post('/claims/{id}/reject', [AdminClaimVerificationController::class, 'reject'])->name('claims.reject');
+    Route::post('/claims/{id}/mark-claimed', [AdminClaimVerificationController::class, 'markClaimed'])->name('claims.mark-claimed');
     Route::get('/inventory', [AdminInventoryController::class, 'index'])->name('inventory');
     Route::post('/inventory', [AdminInventoryController::class, 'store'])->name('inventory.store');
     Route::put('/inventory/{id}', [AdminInventoryController::class, 'update'])->name('inventory.update');

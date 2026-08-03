@@ -151,7 +151,19 @@
                     </td>
                     <td>
                         @if($pClaim->status === 'approved')
-                            <span class="badge bg-success">Approved</span>
+                            @if(optional($pClaim->foundItem)->status === 'ready_for_pickup')
+                                <span class="badge bg-info text-dark mb-1 d-block"><i class="bi bi-box-seam me-1"></i> Ready for Pick-up</span>
+                                <form action="{{ route('admin.claims.mark-claimed', $pClaim->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-xs btn-success py-1 px-2 fw-bold w-100" onclick="return confirm('Confirm that student has physically picked up this item?')">
+                                        <i class="bi bi-check-lg me-1"></i> Mark as Claimed
+                                    </button>
+                                </form>
+                            @elseif(optional($pClaim->foundItem)->status === 'claimed')
+                                <span class="badge bg-success p-2"><i class="bi bi-check-circle-fill me-1"></i> Claimed & Delivered</span>
+                            @else
+                                <span class="badge bg-success">Approved</span>
+                            @endif
                         @elseif($pClaim->status === 'rejected')
                             <span class="badge bg-danger">Rejected</span>
                         @endif

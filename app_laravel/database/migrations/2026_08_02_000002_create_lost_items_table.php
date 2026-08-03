@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('location');
             $table->string('image_path')->nullable();
             $table->longText('feature_vector')->nullable();
-            $table->enum('status', ['open', 'claim_pending', 'resolved', 'cancelled'])->default('open');
+            $table->string('status')->default('open');
             $table->timestamps();
         });
     }

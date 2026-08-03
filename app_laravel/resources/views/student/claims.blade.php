@@ -37,9 +37,15 @@
                         @if($claim->status === 'pending')
                             <span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i> Under Review</span>
                         @elseif($claim->status === 'approved')
-                            <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>
+                            @if(optional($claim->foundItem)->status === 'claimed')
+                                <span class="badge bg-secondary p-2"><i class="bi bi-check2-all me-1"></i> Claimed & Picked Up</span>
+                            @else
+                                <span class="badge bg-info text-dark p-2"><i class="bi bi-box-seam-fill me-1"></i> Ready for Pick-up</span>
+                            @endif
                         @elseif($claim->status === 'rejected')
                             <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i> Rejected</span>
+                        @else
+                            <span class="badge bg-secondary">{{ ucfirst($claim->status) }}</span>
                         @endif
                     </td>
                     <td>

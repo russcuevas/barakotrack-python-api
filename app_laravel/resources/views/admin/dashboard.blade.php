@@ -34,17 +34,17 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: #198754;">
-                <div class="text-muted fs-7 fw-semibold">Approved Claims</div>
-                <h2 class="fw-bold my-1 text-success">{{ $approvedClaimsCount }}</h2>
-                <small class="text-success fw-semibold"><i class="bi bi-check-all"></i> Successfully returned</small>
+            <div class="card card-custom stat-card p-3" style="border-left-color: #0dcaf0;">
+                <div class="text-muted fs-7 fw-semibold">Ready for Pick-up</div>
+                <h2 class="fw-bold my-1 text-info">{{ $readyForPickupCount }}</h2>
+                <small class="text-info fw-semibold"><i class="bi bi-box-seam"></i> Staged at SAO Office</small>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: var(--primary-color);">
-                <div class="text-muted fs-7 fw-semibold">Total Campus Lost Reports</div>
-                <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $totalLostReports }}</h2>
-                <small class="text-muted"><i class="bi bi-journal-text"></i> Total student submissions</small>
+            <div class="card card-custom stat-card p-3" style="border-left-color: #198754;">
+                <div class="text-muted fs-7 fw-semibold">Claimed Reports</div>
+                <h2 class="fw-bold my-1 text-success">{{ $claimedReportsCount }}</h2>
+                <small class="text-success fw-semibold"><i class="bi bi-check-all"></i> Successfully returned items</small>
             </div>
         </div>
     </div>

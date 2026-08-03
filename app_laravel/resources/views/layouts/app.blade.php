@@ -169,7 +169,7 @@
 
     <!-- Modal: Report Lost Item (Student) -->
     <div class="modal fade" id="reportLostModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form action="{{ route('student.lost-reports.store') }}" method="POST"
                     enctype="multipart/form-data">
@@ -187,12 +187,18 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Category</label>
-                            <select name="category_id" class="form-select" required>
+                            <select name="category_id" class="form-select" id="reportCategorySelect"
+                                onchange="handleReportCategoryChange(this)" required>
                                 <option value="">Select Category...</option>
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
+                                <option value="others">Others...</option>
                             </select>
+                            <div id="otherCategoryWrapper" class="mt-2 d-none">
+                                <input type="text" name="other_category" id="otherCategoryInput"
+                                    class="form-control" placeholder="Please specify category name...">
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -213,7 +219,16 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Item Photo (Used for CNN AI Matcher)</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <input type="file" name="image" class="form-control" accept="image/*"
+                                onchange="previewReportModalImage(this)">
+                            <div id="reportImagePreviewBox"
+                                class="mt-2 text-center p-2 rounded border bg-light d-none">
+                                <small class="text-muted d-block mb-1 fw-bold"><i class="bi bi-image me-1"></i>
+                                    Uploaded Photo Preview</small>
+                                <img id="reportModalImagePreview" src="#" alt="Uploaded Photo Preview"
+                                    class="rounded border shadow-sm img-fluid"
+                                    style="max-height: 180px; object-fit: contain;">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -228,7 +243,7 @@
 
     <!-- Modal: Add Found Item (Admin) -->
     <div class="modal fade" id="reportFoundModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form action="{{ route('admin.inventory.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -246,12 +261,18 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Category</label>
-                            <select name="category_id" class="form-select" required>
+                            <select name="category_id" class="form-select" id="foundCategorySelect"
+                                onchange="handleFoundCategoryChange(this)" required>
                                 <option value="">Select Category...</option>
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
+                                <option value="others">Others...</option>
                             </select>
+                            <div id="otherFoundCategoryWrapper" class="mt-2 d-none">
+                                <input type="text" name="other_category" id="otherFoundCategoryInput"
+                                    class="form-control" placeholder="Please specify category name...">
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -275,8 +296,17 @@
                             <textarea name="description" class="form-control" rows="3" placeholder="Provide visible details..." required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Item Photo (Optional)</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <label class="form-label fw-bold">Item Photo</label>
+                            <input type="file" name="image" class="form-control" accept="image/*"
+                                onchange="previewFoundModalImage(this)">
+                            <div id="foundImagePreviewBox"
+                                class="mt-2 text-center p-2 rounded border bg-light d-none">
+                                <small class="text-muted d-block mb-1 fw-bold"><i class="bi bi-image me-1"></i>
+                                    Uploaded Photo Preview</small>
+                                <img id="foundModalImagePreview" src="#" alt="Uploaded Photo Preview"
+                                    class="rounded border shadow-sm img-fluid"
+                                    style="max-height: 180px; object-fit: contain;">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -556,6 +586,66 @@
                 chatBox.appendChild(botRow);
             }
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleReportCategoryChange(selectEl) {
+            const wrapper = document.getElementById('otherCategoryWrapper');
+            const input = document.getElementById('otherCategoryInput');
+            if (selectEl.value === 'others') {
+                wrapper.classList.remove('d-none');
+                input.required = true;
+                input.focus();
+            } else {
+                wrapper.classList.add('d-none');
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        function previewReportModalImage(inputEl) {
+            const previewBox = document.getElementById('reportImagePreviewBox');
+            const previewImg = document.getElementById('reportModalImagePreview');
+            if (inputEl.files && inputEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewBox.classList.remove('d-none');
+                };
+                reader.readAsDataURL(inputEl.files[0]);
+            } else {
+                previewBox.classList.add('d-none');
+                previewImg.src = '#';
+            }
+        }
+
+        function handleFoundCategoryChange(selectEl) {
+            const wrapper = document.getElementById('otherFoundCategoryWrapper');
+            const input = document.getElementById('otherFoundCategoryInput');
+            if (selectEl.value === 'others') {
+                wrapper.classList.remove('d-none');
+                input.required = true;
+                input.focus();
+            } else {
+                wrapper.classList.add('d-none');
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        function previewFoundModalImage(inputEl) {
+            const previewBox = document.getElementById('foundImagePreviewBox');
+            const previewImg = document.getElementById('foundModalImagePreview');
+            if (inputEl.files && inputEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewBox.classList.remove('d-none');
+                };
+                reader.readAsDataURL(inputEl.files[0]);
+            } else {
+                previewBox.classList.add('d-none');
+                previewImg.src = '#';
+            }
         }
     </script>
 </body>

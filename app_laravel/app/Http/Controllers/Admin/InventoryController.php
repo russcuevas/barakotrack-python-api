@@ -22,7 +22,8 @@ class InventoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required',
+            'other_category' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'date_found' => 'required|date',
@@ -30,6 +31,20 @@ class InventoryController extends Controller
             'storage_location' => 'required|string|max:255',
             'image' => 'nullable|image|max:5120',
         ]);
+
+        $categoryId = $request->category_id;
+        if ($request->category_id === 'others' && $request->filled('other_category')) {
+            $catName = trim($request->other_category);
+            $cat = Category::firstOrCreate(
+                ['slug' => \Illuminate\Support\Str::slug($catName)],
+                [
+                    'name' => $catName,
+                    'icon' => 'bi-tag-fill',
+                    'description' => 'User defined custom category'
+                ]
+            );
+            $categoryId = $cat->id;
+        }
 
         $admin = Auth::user() ?? \App\Models\User::where('role', 'admin')->first();
 
@@ -61,7 +76,7 @@ class InventoryController extends Controller
 
         FoundItem::create([
             'user_id' => $admin->id,
-            'category_id' => $validated['category_id'],
+            'category_id' => $categoryId,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'date_found' => $validated['date_found'],
@@ -80,7 +95,7 @@ class InventoryController extends Controller
         $item = FoundItem::findOrFail($id);
         
         $validated = $request->validate([
-            'status' => 'required|in:available,claim_pending,claimed,disposed',
+            'status' => 'required|in:available,claim_pending,ready_for_pickup,claimed,disposed',
             'storage_location' => 'nullable|string|max:255'
         ]);
 

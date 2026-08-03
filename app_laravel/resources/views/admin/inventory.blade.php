@@ -49,10 +49,12 @@
                                     <span class="badge bg-success">Available</span>
                                 @elseif($item->status === 'claim_pending')
                                     <span class="badge bg-warning text-dark">Claim Pending</span>
+                                @elseif($item->status === 'ready_for_pickup')
+                                    <span class="badge bg-info text-dark"><i class="bi bi-box-seam me-1"></i> Ready for Pick-up</span>
                                 @elseif($item->status === 'claimed')
-                                    <span class="badge bg-primary">Claimed & Delivered</span>
+                                    <span class="badge bg-secondary"><i class="bi bi-check2-all me-1"></i> Claimed</span>
                                 @elseif($item->status === 'disposed')
-                                    <span class="badge bg-secondary">Disposed</span>
+                                    <span class="badge bg-dark">Disposed</span>
                                 @endif
                             </td>
                             <td>
@@ -65,10 +67,10 @@
                                             Available</option>
                                         <option value="claim_pending"
                                             {{ $item->status === 'claim_pending' ? 'selected' : '' }}>Claim Pending</option>
+                                        <option value="ready_for_pickup"
+                                            {{ $item->status === 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
                                         <option value="claimed" {{ $item->status === 'claimed' ? 'selected' : '' }}>Claimed
                                         </option>
-                                        <option value="disposed" {{ $item->status === 'disposed' ? 'selected' : '' }}>
-                                            Disposed</option>
                                     </select>
                                 </form>
                             </td>
