@@ -5,8 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold m-0 text-danger"><i class="bi bi-shield-lock-fill me-2"></i> Student Affairs Office (SAO)
-                Command Center</h4>
+            <h4 class="fw-bold m-0 text-danger"><i class="bi bi-shield-lock-fill me-2"></i> Admin Dashboard</h4>
             <span class="text-muted">Overview of campus found inventory, pending verification claims, and student
                 reports.</span>
         </div>
@@ -73,7 +72,8 @@
                     @forelse($recentPendingClaims as $pClaim)
                         @php
                             $score = $pClaim->match_score ?? 0;
-                            $badgeColor = $score >= 85 ? 'bg-success' : ($score >= 50 ? 'bg-warning text-dark' : 'bg-secondary');
+                            $badgeColor =
+                                $score >= 85 ? 'bg-success' : ($score >= 50 ? 'bg-warning text-dark' : 'bg-secondary');
                         @endphp
                         <tr>
                             <td><strong class="text-warning">#CLM-{{ $pClaim->id }}</strong></td>
@@ -88,10 +88,12 @@
                             </td>
                             <td><small>{{ Str::limit($pClaim->proof_description, 45) }}</small></td>
                             <td>
-                                @if($score > 0)
-                                    <span class="badge {{ $badgeColor }} p-2 fw-bold"><i class="bi bi-cpu-fill me-1"></i> {{ $score }}% Match</span>
+                                @if ($score > 0)
+                                    <span class="badge {{ $badgeColor }} p-2 fw-bold"><i class="bi bi-cpu-fill me-1"></i>
+                                        {{ $score }}% Match</span>
                                 @else
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-eye"></i> Manual Review</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-eye"></i> Manual
+                                        Review</span>
                                 @endif
                             </td>
                             <td>

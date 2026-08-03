@@ -31,6 +31,8 @@ Route::get('/', function () {
 // Unified Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/register', [LoginController::class, 'register'])->name('register');
+Route::get('/verify-account/{id}', [LoginController::class, 'verifyAccount'])->name('verify.account');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Student Portal Routes

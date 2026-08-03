@@ -171,7 +171,7 @@
                         </div>
                     @endif
 
-                    @if ($errors->any())
+                    @if ($errors->any() && !($errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation')))
                         <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 text-start" role="alert">
                             {{ $errors->first() }}
                             <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
@@ -204,10 +204,102 @@
                     <hr class="my-4" style="opacity: 0.12;">
 
                     <div class="mb-4">
-                        <a href="#" class="btn btn-outline-create text-decoration-none">
+                        <button type="button" class="btn btn-outline-create w-100" data-bs-toggle="modal"
+                            data-bs-target="#registerModal">
                             Create new account
-                        </a>
+                        </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Student Account Registration -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+                <div class="modal-header text-white"
+                    style="background-color: var(--primary-color); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <h5 class="modal-header-title fw-bold m-0 fs-6">
+                        <i class="bi bi-person-plus-fill me-2 text-warning"></i> Student Account Registration
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <div class="alert alert-warning py-2 fs-7 mb-3 d-flex align-items-center gap-2 border-warning">
+                        <i class="bi bi-shield-lock-fill text-warning fs-5"></i>
+                        <div>
+                            <strong>Student Registration Only</strong> <br> You must use your official University of
+                            Batangas <code>@ub.edu.ph</code> email address.
+                        </div>
+                    </div>
+
+                    @if ($errors->any() && ($errors->has('name') || $errors->has('student_id_number') || $errors->has('email') || $errors->has('password')))
+                        <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 mb-3 text-start border-danger" role="alert">
+                            <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Registration Error:</div>
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('register') }}" method="POST" id="registrationForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label fw-bold fs-7 mb-1 text-dark">Full Name <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control form-control-custom"
+                                placeholder="e.g. Russel Vincent Cuevas" required value="{{ old('name') }}">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold fs-7 mb-1 text-dark">Student ID Number <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="student_id_number"
+                                    class="form-control form-control-custom" placeholder="e.g. 2420580" required
+                                    value="{{ old('student_id_number') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold fs-7 mb-1 text-dark">Phone Number</label>
+                                <input type="text" name="phone" class="form-control form-control-custom"
+                                    placeholder="e.g. 09189876543" value="{{ old('phone') }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold fs-7 mb-1 text-dark">UB Student Email <span
+                                    class="text-danger">*</span></label>
+                            <input type="email" name="email" id="regEmailInput"
+                                class="form-control form-control-custom" placeholder="your.name@ub.edu.ph" required
+                                value="{{ old('email') }}" pattern="^[a-zA-Z0-9._%+-]+@ub\.edu\.ph$">
+                            <small class="text-muted fs-7 d-block mt-1"><i class="bi bi-info-circle me-1"></i>
+                                Registration is restricted to <strong>@ub.edu.ph</strong> emails only.</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold fs-7 mb-1 text-dark">Password <span
+                                        class="text-danger">*</span></label>
+                                <input type="password" name="password" class="form-control form-control-custom"
+                                    placeholder="At least 8 characters" required minlength="8">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold fs-7 mb-1 text-dark">Confirm Password <span
+                                        class="text-danger">*</span></label>
+                                <input type="password" name="password_confirmation"
+                                    class="form-control form-control-custom" placeholder="Re-type password" required
+                                    minlength="8">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-login-maroon w-100 py-2 fw-bold mt-2">
+                            <i class="bi bi-person-check-fill me-1"></i> Register Student Account
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -221,6 +313,14 @@
             document.getElementById('loginForm').submit();
         }
     </script>
+    @if ($errors->has('name') || $errors->has('student_id_number') || $errors->has('email') || $errors->has('password'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var regModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                regModal.show();
+            });
+        </script>
+    @endif
 </body>
 
 </html>
