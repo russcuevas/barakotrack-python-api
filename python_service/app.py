@@ -23,6 +23,7 @@ def load_image_from_path_or_url(source):
     else:
         return Image.open(source)
 
+@app.route('/', methods=['GET'])
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({
