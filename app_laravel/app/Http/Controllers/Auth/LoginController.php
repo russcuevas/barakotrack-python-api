@@ -138,4 +138,64 @@ class LoginController extends Controller
 
         return redirect()->route('login')->with('success', 'Your student account has been successfully verified and activated! You can now log into BarakoTrack.');
     }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'forgot_email' => 'required|email|exists:users,email',
+        ], [
+            'forgot_email.required' => 'Please enter your registered email address.',
+            'forgot_email.email' => 'Please enter a valid email address.',
+            'forgot_email.exists' => 'No account found with this email address.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator, 'forgot_password')->withInput();
+        }
+
+        $user = User::where('email', strtolower($request->forgot_email))->first();
+
+        // Generate temporary signed URL valid for 60 minutes
+        $resetUrl = URL::temporarySignedRoute(
+            'password.reset',
+            now()->addMinutes(60),
+            ['id' => $user->id]
+        );
+
+        // Send reset email via Gmail SMTP
+        try {
+            Mail::to($user->email)->send(new \App\Mail\ResetPasswordEmail($user, $resetUrl));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SMTP Password Reset Exception: ' . $e->getMessage());
+        }
+
+        return redirect()->route('login')->with('success', "Password reset link sent to {$user->email}! Please check your email inbox to reset your password.");
+    }
+
+    public function showResetPasswordForm(Request $request, $id)
+    {
+        if (!$request->hasValidSignature()) {
+            return redirect()->route('login')->withErrors(['email' => 'Invalid or expired password reset link. Please request a new reset link.']);
+        }
+
+        $user = User::findOrFail($id);
+
+        return view('auth.reset_password', compact('user'));
+    }
+
+    public function resetPassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'password.confirmed' => 'Password confirmation does not match.',
+            'password.min' => 'Password must be at least 8 characters long.',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'Your password has been successfully reset! You can now log into BarakoTrack using your new password.');
+    }
 }

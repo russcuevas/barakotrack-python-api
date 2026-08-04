@@ -33,6 +33,9 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::get('/verify-account/{id}', [LoginController::class, 'verifyAccount'])->name('verify.account');
+Route::post('/forgot-password', [LoginController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{id}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password/{id}', [LoginController::class, 'resetPassword'])->name('password.update');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Student Portal Routes

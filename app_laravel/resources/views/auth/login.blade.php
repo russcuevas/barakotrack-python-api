@@ -196,7 +196,7 @@
                         </button>
 
                         <div class="mb-4">
-                            <a href="#" class="text-muted text-decoration-none fs-7"
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="text-muted text-decoration-none fs-7"
                                 style="color: #64748b;">Forgot password?</a>
                         </div>
                     </form>
@@ -249,7 +249,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('register') }}" method="POST" id="registrationForm">
+                    <form action="{{ route('register') }}" method="POST" id="registrationForm" onsubmit="handleRegistrationSubmit(this)">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label fw-bold fs-7 mb-1 text-dark">Full Name <span
@@ -299,8 +299,52 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-login-maroon w-100 py-2 fw-bold mt-2">
+                        <button type="submit" id="regSubmitBtn" class="btn btn-login-maroon w-100 py-2 fw-bold mt-2">
                             <i class="bi bi-person-check-fill me-1"></i> Register Student Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Forgot Password -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+                <div class="modal-header text-white"
+                    style="background-color: var(--primary-color); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <h5 class="modal-header-title fw-bold m-0 fs-6">
+                        <i class="bi bi-key-fill me-2 text-warning"></i> Forgot Your Password?
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <p class="text-muted fs-7 mb-3">
+                        Enter your registered email address below. We will send a secure password reset link directly to your inbox.
+                    </p>
+
+                    @if ($errors->hasBag('forgot_password'))
+                        <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 mb-3 text-start border-danger" role="alert">
+                            <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Reset Request Error:</div>
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->forgot_password->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('password.email') }}" method="POST" id="forgotPasswordForm" onsubmit="handleForgotPasswordSubmit(this)">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label fw-bold fs-7 mb-1 text-dark">Registered Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="forgot_email" class="form-control form-control-custom" placeholder="e.g. student@ub.edu.ph" required value="{{ old('forgot_email') }}">
+                        </div>
+
+                        <button type="submit" id="forgotSubmitBtn" class="btn btn-login-maroon w-100 py-2 fw-bold mt-2">
+                            <i class="bi bi-send-fill me-1"></i> Send Password Reset Link
                         </button>
                     </form>
                 </div>
@@ -315,12 +359,58 @@
             document.getElementById('passwordInput').value = password;
             document.getElementById('loginForm').submit();
         }
+
+        function handleRegistrationSubmit(form) {
+            const btn = document.getElementById('regSubmitBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending Verification Email...`;
+            }
+
+            let alertBox = document.getElementById('regLoadingAlert');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.id = 'regLoadingAlert';
+                alertBox.className = 'alert alert-info py-2 fs-7 mb-3 d-flex align-items-center gap-2 border-info shadow-sm';
+                alertBox.innerHTML = `<span class="spinner-border spinner-border-sm text-info"></span> <div><strong>Please wait...</strong> Sending student activation link to your email. Do not refresh or close.</div>`;
+                form.parentNode.insertBefore(alertBox, form);
+            }
+
+            document.querySelectorAll('#registerModal .btn-close').forEach(b => b.style.pointerEvents = 'none');
+        }
+
+        function handleForgotPasswordSubmit(form) {
+            const btn = document.getElementById('forgotSubmitBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending Reset Link...`;
+            }
+
+            let alertBox = document.getElementById('forgotLoadingAlert');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.id = 'forgotLoadingAlert';
+                alertBox.className = 'alert alert-info py-2 fs-7 mb-3 d-flex align-items-center gap-2 border-info shadow-sm';
+                alertBox.innerHTML = `<span class="spinner-border spinner-border-sm text-info"></span> <div><strong>Please wait...</strong> Sending reset link to your email. Do not refresh or close.</div>`;
+                form.parentNode.insertBefore(alertBox, form);
+            }
+
+            document.querySelectorAll('#forgotPasswordModal .btn-close').forEach(b => b.style.pointerEvents = 'none');
+        }
     </script>
     @if ($errors->hasBag('registration') || ($errors->any() && (old('student_id_number') || old('name') || $errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation'))))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 var regModal = new bootstrap.Modal(document.getElementById('registerModal'));
                 regModal.show();
+            });
+        </script>
+    @endif
+    @if ($errors->hasBag('forgot_password'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+                forgotModal.show();
             });
         </script>
     @endif

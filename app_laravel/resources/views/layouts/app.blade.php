@@ -117,12 +117,15 @@
                     <img src="https://ui-avatars.com/api/?name={{ urlencode($authUser->name) }}&background={{ $userRole === 'admin' ? '1e1e2d' : '752738' }}&color=fec452"
                         class="rounded-circle" width="34" height="34" alt="User">
                     <div class="d-none d-md-block text-start" style="line-height: 1.2;">
-                        <div class="fw-bold fs-7 text-truncate" style="max-width: 140px;">{{ $authUser->name }}</div>
-                        <div class="text-muted fs-7" style="font-size: 0.7rem;">
+                        <div class="fw-bold fs-7 text-truncate" style="max-width: 160px;">{{ $authUser->name }}</div>
+                        <div class="text-muted fs-7 d-flex align-items-center gap-1" style="font-size: 0.7rem;">
                             @if ($userRole === 'admin')
                                 <span class="badge bg-danger p-1">Admin</span>
                             @else
                                 <span class="badge bg-secondary p-1">Student</span>
+                                @if (!empty($authUser->student_id_number))
+                                    <span class="fw-semibold text-muted" style="font-size: 0.68rem;">#{{ $authUser->student_id_number }}</span>
+                                @endif
                             @endif
                         </div>
                     </div>
