@@ -26,7 +26,7 @@
                         <th>Date Found & Location</th>
                         <th>Storage Cabinet / Safe</th>
                         <th>Status</th>
-                        <th>Update Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,21 +58,33 @@
                                 @endif
                             </td>
                             <td>
-                                <form action="{{ route('admin.inventory.update', $item->id) }}" method="POST"
-                                    class="d-flex gap-1">
-                                    @csrf
-                                    @method('PUT')
-                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                                        <option value="available" {{ $item->status === 'available' ? 'selected' : '' }}>
-                                            Available</option>
-                                        <option value="claim_pending"
-                                            {{ $item->status === 'claim_pending' ? 'selected' : '' }}>Claim Pending</option>
-                                        <option value="ready_for_pickup"
-                                            {{ $item->status === 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
-                                        <option value="claimed" {{ $item->status === 'claimed' ? 'selected' : '' }}>Claimed
-                                        </option>
-                                    </select>
-                                </form>
+                                <div class="d-flex align-items-center gap-1">
+                                    <form action="{{ route('admin.inventory.update', $item->id) }}" method="POST"
+                                        class="flex-grow-1">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="available" {{ $item->status === 'available' ? 'selected' : '' }}>
+                                                Available</option>
+                                            <option value="claim_pending"
+                                                {{ $item->status === 'claim_pending' ? 'selected' : '' }}>Claim Pending</option>
+                                            <option value="ready_for_pickup"
+                                                {{ $item->status === 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
+                                            <option value="claimed" {{ $item->status === 'claimed' ? 'selected' : '' }}>Claimed
+                                            </option>
+                                            <option value="disposed" {{ $item->status === 'disposed' ? 'selected' : '' }}>Disposed
+                                            </option>
+                                        </select>
+                                    </form>
+                                    <form action="{{ route('admin.inventory.destroy', $item->id) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to delete this inventory item?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Item">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

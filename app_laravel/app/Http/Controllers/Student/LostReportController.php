@@ -67,7 +67,9 @@ class LostReportController extends Controller
             try {
                 $fullPath = public_path('images/' . $filename);
                 $response = Http::attach(
-                    'image', file_get_contents($fullPath), $filename
+                    'image',
+                    file_get_contents($fullPath),
+                    $filename
                 )->post('http://127.0.0.1:5000/extract-features');
 
                 if ($response->successful()) {
@@ -97,7 +99,7 @@ class LostReportController extends Controller
     {
         $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
         $item = LostItem::where('user_id', $user->id)->findOrFail($id);
-        
+
         $item->status = 'resolved';
         $item->save();
 
@@ -133,7 +135,7 @@ class LostReportController extends Controller
             }
         }
 
-        usort($matches, function($a, $b) {
+        usort($matches, function ($a, $b) {
             return $b['score'] <=> $a['score'];
         });
 
@@ -147,5 +149,14 @@ class LostReportController extends Controller
             ],
             'matches' => $matches
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $user = Auth::user() ?? \App\Models\User::where('role', 'student')->first();
+        $item = LostItem::where('user_id', $user->id)->findOrFail($id);
+        $item->delete();
+
+        return redirect()->back()->with('success', 'Lost item report deleted successfully.');
     }
 }

@@ -69,7 +69,7 @@
                         <th>Category</th>
                         <th>Date Lost</th>
                         <th>Location</th>
-                        <th>Status</th>
+                        <th>Status & Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,21 +99,33 @@
                             <td>{{ $report->date_lost->format('M d, Y') }}</td>
                             <td><i class="bi bi-geo-alt text-danger me-1"></i> {{ $report->location }}</td>
                             <td>
-                                @if ($report->status === 'open')
-                                    <span class="badge bg-danger p-2 px-3 badge-open-search"
-                                        onclick="startCnnScan('{{ $report->id }}', '{{ addslashes($report->title) }}', '{{ $report->image_path }}')"
-                                        title="Click to run live CNN AI Visual Matcher">
-                                        <i class="bi bi-cpu-fill me-1 text-warning"></i> Open Search
-                                    </span>
-                                @elseif($report->status === 'claim_pending')
-                                    <span class="badge bg-warning text-dark p-2 px-3">
-                                        <i class="bi bi-clock-history me-1"></i> Claim Pending
-                                    </span>
-                                @elseif($report->status === 'resolved')
-                                    <span class="badge bg-success p-2 px-3">
-                                        <i class="bi bi-check-circle me-1"></i> Resolved
-                                    </span>
-                                @endif
+                                <div class="d-flex align-items-center gap-2">
+                                    <div>
+                                        @if ($report->status === 'open')
+                                            <span class="badge bg-danger p-2 px-3 badge-open-search"
+                                                onclick="startCnnScan('{{ $report->id }}', '{{ addslashes($report->title) }}', '{{ $report->image_path }}')"
+                                                title="Click to run live CNN AI Visual Matcher">
+                                                <i class="bi bi-cpu-fill me-1 text-warning"></i> Open Search
+                                            </span>
+                                        @elseif($report->status === 'claim_pending')
+                                            <span class="badge bg-warning text-dark p-2 px-3">
+                                                <i class="bi bi-clock-history me-1"></i> Claim Pending
+                                            </span>
+                                        @elseif($report->status === 'resolved')
+                                            <span class="badge bg-success p-2 px-3">
+                                                <i class="bi bi-check-circle me-1"></i> Resolved
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <form action="{{ route('student.lost-reports.destroy', $report->id) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to delete this lost report?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Report">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

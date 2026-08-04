@@ -41,6 +41,7 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::get('/found-items', [StudentFoundItemController::class, 'index'])->name('found-items');
     Route::get('/lost-reports', [StudentLostReportController::class, 'index'])->name('lost-reports');
     Route::post('/lost-reports', [StudentLostReportController::class, 'store'])->name('lost-reports.store');
+    Route::delete('/lost-reports/{id}', [StudentLostReportController::class, 'destroy'])->name('lost-reports.destroy');
     Route::get('/lost-reports/{id}/cnn-scan', [StudentLostReportController::class, 'scanCnn'])->name('lost-reports.cnn-scan');
     Route::post('/lost-reports/{id}/resolve', [StudentLostReportController::class, 'resolve'])->name('lost-reports.resolve');
     Route::get('/matcher', [StudentMatcherController::class, 'index'])->name('matcher');
@@ -58,6 +59,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/inventory', [AdminInventoryController::class, 'index'])->name('inventory');
     Route::post('/inventory', [AdminInventoryController::class, 'store'])->name('inventory.store');
     Route::put('/inventory/{id}', [AdminInventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/inventory/{id}', [AdminInventoryController::class, 'destroy'])->name('inventory.destroy');
     Route::get('/lost-reports', [AdminLostReportController::class, 'index'])->name('lost-reports');
 });
 

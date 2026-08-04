@@ -107,4 +107,12 @@ class InventoryController extends Controller
 
         return redirect()->back()->with('success', "Found item inventory updated to '{$item->status}'.");
     }
+
+    public function destroy($id)
+    {
+        $item = FoundItem::findOrFail($id);
+        $item->delete();
+
+        return redirect()->back()->with('success', 'Found item deleted successfully from inventory.');
+    }
 }
