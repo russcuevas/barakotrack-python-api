@@ -171,7 +171,7 @@
                         </div>
                     @endif
 
-                    @if ($errors->any() && !($errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation')))
+                    @if ($errors->any() && !$errors->hasBag('registration') && !($errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation')))
                         <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 text-start" role="alert">
                             {{ $errors->first() }}
                             <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
@@ -234,11 +234,14 @@
                         </div>
                     </div>
 
-                    @if ($errors->any() && ($errors->has('name') || $errors->has('student_id_number') || $errors->has('email') || $errors->has('password')))
+                    @if ($errors->hasBag('registration') || ($errors->any() && (old('student_id_number') || old('name') || $errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation'))))
+                        @php
+                            $regErrors = $errors->hasBag('registration') ? $errors->registration->all() : $errors->all();
+                        @endphp
                         <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 mb-3 text-start border-danger" role="alert">
                             <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Registration Error:</div>
                             <ul class="mb-0 ps-3">
-                                @foreach ($errors->all() as $error)
+                                @foreach ($regErrors as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
@@ -313,7 +316,7 @@
             document.getElementById('loginForm').submit();
         }
     </script>
-    @if ($errors->has('name') || $errors->has('student_id_number') || $errors->has('email') || $errors->has('password'))
+    @if ($errors->hasBag('registration') || ($errors->any() && (old('student_id_number') || old('name') || $errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation'))))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 var regModal = new bootstrap.Modal(document.getElementById('registerModal'));

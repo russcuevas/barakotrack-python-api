@@ -69,7 +69,7 @@ class LoginController extends Controller
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'student_id_number' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -91,6 +91,12 @@ class LoginController extends Controller
             'password.confirmed' => 'Password confirmation does not match.',
             'password.min' => 'Password must be at least 8 characters long.',
         ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator, 'registration')->withInput();
+        }
+
+        $validated = $validator->validated();
 
         $user = User::create([
             'name' => $validated['name'],
