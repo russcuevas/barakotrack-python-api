@@ -130,7 +130,7 @@
     </div>
 
     <div class="row g-4 mb-4">
-        @foreach ($recentFoundItems as $item)
+        @forelse ($recentFoundItems as $item)
             <div class="col-md-4">
                 <div class="card card-custom h-100 overflow-hidden shadow-sm">
                     <img src="{{ $item->image_path ?: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80' }}"
@@ -159,6 +159,14 @@
                     </div>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div class="col-12">
+                <div class="card card-custom p-4 text-center text-muted shadow-sm">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                    <h6 class="fw-bold text-dark mb-1">No Recent Found Items Found</h6>
+                    <small>There are currently no surrendered found items registered in SAO inventory directory.</small>
+                </div>
+            </div>
+        @endforelse
     </div>
 @endsection

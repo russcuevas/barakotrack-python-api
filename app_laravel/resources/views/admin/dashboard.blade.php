@@ -57,9 +57,11 @@
                         <h5 class="fw-bold m-0 text-dark">
                             <i class="bi bi-graph-up-arrow text-danger me-2"></i> Yearly Incident & Lost Breakdown (%)
                         </h5>
-                        <small class="text-muted">Multi-year trend showing reported lost items & yearly loss share (%)</small>
+                        <small class="text-muted">Multi-year trend showing reported lost items & yearly loss share
+                            (%)</small>
                     </div>
-                    <span class="badge bg-danger-subtle text-danger border border-danger p-2 fw-bold" style="font-size: 0.78rem;">
+                    <span class="badge bg-danger-subtle text-danger border border-danger p-2 fw-bold"
+                        style="font-size: 0.78rem;">
                         <i class="bi bi-fire me-1"></i> Peak Year: {{ $peakYearInfo }}
                     </span>
                 </div>
@@ -77,11 +79,13 @@
                         </h5>
                         <small class="text-muted">High-loss risk zone analysis across campus locations</small>
                     </div>
-                    <span class="badge bg-warning-subtle text-dark border border-warning p-1 px-2 fw-bold" style="font-size: 0.75rem;">
+                    <span class="badge bg-warning-subtle text-dark border border-warning p-1 px-2 fw-bold"
+                        style="font-size: 0.75rem;">
                         <i class="bi bi-shield-exclamation me-1"></i> Location Radar
                     </span>
                 </div>
-                <div style="position: relative; height: 310px; width: 100%;" class="d-flex align-items-center justify-content-center">
+                <div style="position: relative; height: 310px; width: 100%;"
+                    class="d-flex align-items-center justify-content-center">
                     <canvas id="hazardRadarChart"></canvas>
                 </div>
             </div>
@@ -94,7 +98,8 @@
             <div class="card card-custom p-4 h-100 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
-                        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-bar-chart-line-fill text-danger me-2"></i> Category Analytics</h5>
+                        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-bar-chart-line-fill text-danger me-2"></i>
+                            Category Analytics</h5>
                         <small class="text-muted">Comparison of surrendered found items vs student lost reports</small>
                     </div>
                     <span class="badge bg-light text-dark border"><i class="bi bi-filter"></i> By Category</span>
@@ -108,12 +113,14 @@
             <div class="card card-custom p-4 h-100 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
-                        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-pie-chart-fill text-warning me-2"></i> Inventory Status</h5>
+                        <h5 class="fw-bold m-0 text-dark"><i class="bi bi-pie-chart-fill text-warning me-2"></i> Inventory
+                            Status</h5>
                         <small class="text-muted">Storage breakdown by item status</small>
                     </div>
                     <span class="badge bg-light text-dark border"><i class="bi bi-box-seam"></i> Real-time</span>
                 </div>
-                <div style="position: relative; height: 300px; width: 100%;" class="d-flex align-items-center justify-content-center">
+                <div style="position: relative; height: 300px; width: 100%;"
+                    class="d-flex align-items-center justify-content-center">
                     <canvas id="statusChart"></canvas>
                 </div>
             </div>
@@ -161,7 +168,8 @@
                             <td><small>{{ Str::limit($pClaim->proof_description, 45) }}</small></td>
                             <td>
                                 @if ($score > 0)
-                                    <span class="badge {{ $badgeColor }} p-2 fw-bold"><i class="bi bi-cpu-fill me-1"></i>
+                                    <span class="badge {{ $badgeColor }} p-2 fw-bold"><i
+                                            class="bi bi-cpu-fill me-1"></i>
                                         {{ $score }}% Match</span>
                                 @else
                                     <span class="badge bg-light text-dark border"><i class="bi bi-eye"></i> Manual
@@ -187,7 +195,7 @@
     <!-- Chart.js 4 Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const categoryLabels = @json($categoryLabels);
             const foundCategoryCounts = @json($foundCategoryCounts);
             const lostCategoryCounts = @json($lostCategoryCounts);
@@ -210,8 +218,7 @@
                 type: 'line',
                 data: {
                     labels: yearlyLabels,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Lost Reports Count',
                             data: yearlyLostData,
                             borderColor: '#752738', // UB Maroon
@@ -262,7 +269,11 @@
                         legend: {
                             position: 'top',
                             labels: {
-                                font: { family: 'Inter', size: 11, weight: '600' },
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '600'
+                                },
                                 usePointStyle: true,
                                 padding: 12
                             }
@@ -288,8 +299,16 @@
                     },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Inter', size: 11, weight: '600' } }
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '600'
+                                }
+                            }
                         },
                         y: {
                             type: 'linear',
@@ -298,14 +317,23 @@
                             title: {
                                 display: true,
                                 text: 'Items',
-                                font: { family: 'Inter', size: 10, weight: '600' }
+                                font: {
+                                    family: 'Inter',
+                                    size: 10,
+                                    weight: '600'
+                                }
                             },
                             beginAtZero: true,
                             ticks: {
                                 precision: 0,
-                                font: { family: 'Inter', size: 10 }
+                                font: {
+                                    family: 'Inter',
+                                    size: 10
+                                }
                             },
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
                         },
                         y1: {
                             type: 'linear',
@@ -314,17 +342,26 @@
                             title: {
                                 display: true,
                                 text: 'Lost Share (%)',
-                                font: { family: 'Inter', size: 10, weight: '600' }
+                                font: {
+                                    family: 'Inter',
+                                    size: 10,
+                                    weight: '600'
+                                }
                             },
                             beginAtZero: true,
                             max: 100,
                             ticks: {
-                                font: { family: 'Inter', size: 10 },
+                                font: {
+                                    family: 'Inter',
+                                    size: 10
+                                },
                                 callback: function(value) {
                                     return value + '%';
                                 }
                             },
-                            grid: { drawOnChartArea: false }
+                            grid: {
+                                drawOnChartArea: false
+                            }
                         }
                     }
                 }
@@ -336,8 +373,7 @@
                 type: 'radar',
                 data: {
                     labels: locationLabels,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Last Known Location (Lost)',
                             data: locationLostCounts,
                             backgroundColor: 'rgba(220, 53, 69, 0.25)', // Red fill
@@ -368,7 +404,11 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                font: { family: 'Inter', size: 11, weight: '600' },
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '600'
+                                },
                                 usePointStyle: true,
                                 padding: 10
                             }
@@ -380,15 +420,26 @@
                     },
                     scales: {
                         r: {
-                            angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
-                            grid: { color: 'rgba(0, 0, 0, 0.08)' },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.08)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.08)'
+                            },
                             pointLabels: {
-                                font: { family: 'Inter', size: 11, weight: '600' },
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '600'
+                                },
                                 color: '#1e293b'
                             },
                             ticks: {
                                 backdropColor: 'transparent',
-                                font: { family: 'Inter', size: 9 },
+                                font: {
+                                    family: 'Inter',
+                                    size: 9
+                                },
                                 precision: 0
                             }
                         }
@@ -402,8 +453,7 @@
                 type: 'bar',
                 data: {
                     labels: categoryLabels,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Surrendered Found Items',
                             data: foundCategoryCounts,
                             backgroundColor: 'rgba(117, 39, 56, 0.85)', // UB Maroon
@@ -428,7 +478,11 @@
                         legend: {
                             position: 'top',
                             labels: {
-                                font: { family: 'Inter', size: 12, weight: '600' },
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: '600'
+                                },
                                 usePointStyle: true,
                                 padding: 15
                             }
@@ -440,16 +494,28 @@
                     },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Inter', size: 11 } }
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            }
                         },
                         y: {
                             beginAtZero: true,
                             ticks: {
                                 precision: 0,
-                                font: { family: 'Inter', size: 11 }
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
                             },
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
                         }
                     }
                 }
@@ -468,7 +534,7 @@
                             '#fec452', // Claim Pending - Gold
                             '#0dcaf0', // Ready for Pick-up - Cyan
                             '#6c757d', // Claimed - Secondary Gray
-                            '#212529'  // Disposed - Dark
+                            '#212529' // Disposed - Dark
                         ],
                         borderWidth: 2,
                         borderColor: '#ffffff'
@@ -481,7 +547,11 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                font: { family: 'Inter', size: 11, weight: '500' },
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '500'
+                                },
                                 usePointStyle: true,
                                 padding: 12
                             }
