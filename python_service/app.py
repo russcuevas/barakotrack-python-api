@@ -68,6 +68,7 @@ def compare_features():
         return jsonify({"error": "Both vec1 and vec2 are required"}), 400
 
     score = cnn_engine.compute_similarity(vec1, vec2)
+    print(f"[CNN Service LOG] Feature Vector Comparison -> Similarity Score: {score}%", flush=True)
     return jsonify({
         "status": "success",
         "similarity_score": score,
@@ -94,6 +95,7 @@ def compare_images():
         vec2 = cnn_engine.extract_features(img2)
 
         score = cnn_engine.compute_similarity(vec1, vec2)
+        print(f"[CNN Service LOG] Image Comparison:\n  Path 1: {path1}\n  Path 2: {path2}\n  -> Raw Visual Similarity Score: {score}%", flush=True)
         return jsonify({
             "status": "success",
             "similarity_score": score,

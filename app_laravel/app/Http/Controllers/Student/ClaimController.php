@@ -49,13 +49,32 @@ class ClaimController extends Controller
 
         $lostItemId = $validated['lost_item_id'] ?? null;
         if (!$lostItemId) {
-            $matchingLost = LostItem::where('user_id', $user->id)
-                ->where('category_id', $foundItem->category_id)
+            $userLostItems = LostItem::where('user_id', $user->id)
                 ->whereIn('status', ['open', 'claim_pending'])
-                ->first();
-            if ($matchingLost) {
-                $lostItemId = $matchingLost->id;
+                ->get();
+
+            $bestMatchId = null;
+            $bestScore = 0;
+
+            foreach ($userLostItems as $lost) {
+                $score = \App\Services\CNNEngineService::computeItemSimilarity($lost, $foundItem);
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestMatchId = $lost->id;
+                }
             }
+
+            if (!$bestMatchId) {
+                $matchingLost = LostItem::where('user_id', $user->id)
+                    ->where('category_id', $foundItem->category_id)
+                    ->whereIn('status', ['open', 'claim_pending'])
+                    ->first();
+                if ($matchingLost) {
+                    $bestMatchId = $matchingLost->id;
+                }
+            }
+
+            $lostItemId = $bestMatchId;
         }
 
         $claim = Claim::create([
