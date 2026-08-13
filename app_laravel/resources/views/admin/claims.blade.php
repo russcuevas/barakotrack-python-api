@@ -3,6 +3,7 @@
 @section('title', 'Claim Verification Management | SAO Admin')
 
 @section('content')
+@include('partials.loading_overlay')
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
     <div>
         <h4 class="fw-bold m-0 text-dark"><i class="bi bi-shield-exclamation text-warning me-2"></i> Student Claim Verification Panel</h4>

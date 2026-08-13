@@ -125,6 +125,7 @@
 </head>
 
 <body>
+    @include('partials.loading_overlay')
 
     <div class="container-fluid p-0">
         <div class="row g-0 login-split-container">

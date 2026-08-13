@@ -3,6 +3,7 @@
 @section('title', 'CNN AI Visual Matcher | Barako Track')
 
 @section('content')
+    @include('partials.loading_overlay')
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-cpu-fill text-warning me-2"></i> CNN

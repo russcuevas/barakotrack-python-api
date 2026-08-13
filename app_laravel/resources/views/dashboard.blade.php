@@ -4,6 +4,7 @@
     Dashboard')
 
 @section('content')
+    @include('partials.loading_overlay')
 
     @if ($activeRole === 'student')
 

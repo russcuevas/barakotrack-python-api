@@ -3,6 +3,7 @@
 @section('title', 'Found Items Directory | Barako Track')
 
 @section('content')
+    @include('partials.loading_overlay')
     <style>
         .found-item-card {
             transition: transform 0.25s ease, box-shadow 0.25s ease;

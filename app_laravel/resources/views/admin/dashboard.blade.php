@@ -3,6 +3,7 @@
 @section('title', 'Barako Track | SAO Admin Control Panel')
 
 @section('content')
+    @include('partials.loading_overlay')
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
             <h4 class="fw-bold m-0 text-danger"><i class="bi bi-shield-lock-fill me-2"></i> Admin Dashboard</h4>

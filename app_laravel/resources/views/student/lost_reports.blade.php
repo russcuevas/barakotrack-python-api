@@ -3,6 +3,7 @@
 @section('title', 'My Reported Lost Items | Barako Track')
 
 @section('content')
+    @include('partials.loading_overlay')
     <style>
         .scan-container {
             position: relative;
