@@ -56,20 +56,29 @@
         </div>
 
         <!-- Sidebar User Profile Box (Image 2 style) -->
-        <div class="sidebar-user-box">
-            <div class="sidebar-user-avatar">
-                {{ strtoupper(substr($authUser->name ?? 'U', 0, 1)) }}
-            </div>
-            <div class="sidebar-user-info">
-                <div class="sidebar-user-name" title="{{ $authUser->name }}">{{ $authUser->name }}</div>
-                <div class="sidebar-user-role">
-                    @if ($userRole === 'admin')
-                        ADMIN • SAO MANAGEMENT
-                    @else
-                        STUDENT • #{{ $authUser->student_id_number ?: 'CAMPUS USER' }}
-                    @endif
+        <div class="sidebar-user-box d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2 overflow-hidden">
+                <div class="sidebar-user-avatar flex-shrink-0">
+                    {{ strtoupper(substr($authUser->name ?? 'U', 0, 1)) }}
+                </div>
+                <div class="sidebar-user-info overflow-hidden">
+                    <div class="sidebar-user-name text-truncate" title="{{ $authUser->name }}">{{ $authUser->name }}
+                    </div>
+                    <div class="sidebar-user-role">
+                        @if ($userRole === 'admin')
+                            ADMIN <br> SAO MANAGEMENT
+                        @else
+                            STUDENT <br> #{{ $authUser->student_id_number ?: 'CAMPUS USER' }}
+                        @endif
+                    </div>
                 </div>
             </div>
+            <!-- Edit Profile / Change Password Trigger Button -->
+            <button type="button" class="btn btn-sm text-warning p-1 ms-1 flex-shrink-0"
+                style="background: rgba(254, 196, 82, 0.12); border: 1px solid rgba(254, 196, 82, 0.35); border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"
+                data-bs-toggle="modal" data-bs-target="#editProfileModal" title="Edit Profile & Change Password">
+                <i class="bi bi-pencil-square" style="font-size: 0.95rem;"></i>
+            </button>
         </div>
 
         <!-- Navigation Menu -->
@@ -168,11 +177,157 @@
         </footer>
     </div>
 
+    <!-- Modal: Edit Profile & Change Password (Student & Admin) -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+                <form action="{{ route('profile.update-password') }}" method="POST">
+                    @csrf
+                    <div class="modal-header text-white"
+                        style="background: linear-gradient(135deg, #691220 0%, #4d0a15 100%);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-gear fs-4 text-warning"></i>
+                            <div>
+                                <h5 class="modal-title fw-bold m-0 text-white">User Profile & Security</h5>
+                                <small style="color: rgba(255,255,255,0.75); font-size: 0.75rem;">Account Overview &
+                                    Password Management</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <!-- Account Details Section (Read-Only) -->
+                        <div class="p-3 mb-4 rounded-3 border" style="background: #f8fafc;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-badge-fill text-danger fs-5"></i>
+                                    <h6 class="fw-bold m-0 text-dark">Account Details</h6>
+                                </div>
+                                <span
+                                    class="badge rounded-pill {{ $userRole === 'admin' ? 'bg-danger text-white' : 'bg-primary text-white' }} px-3 py-1 fw-bold">
+                                    {{ $userRole === 'admin' ? 'SAO Administrator' : 'Enrolled Student' }}
+                                </span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label text-muted fs-7 fw-semibold mb-1">
+                                        <i class="bi bi-person-fill text-secondary me-1"></i> Full Name
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm bg-white"
+                                        value="{{ $authUser->name }}" readonly
+                                        style="cursor: not-allowed; color: #1e293b; font-weight: 600;">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label text-muted fs-7 fw-semibold mb-1">
+                                        <i class="bi bi-envelope-fill text-secondary me-1"></i> Institutional Email
+                                    </label>
+                                    <input type="email" class="form-control form-control-sm bg-white"
+                                        value="{{ $authUser->email }}" readonly
+                                        style="cursor: not-allowed; color: #1e293b; font-weight: 600;">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label text-muted fs-7 fw-semibold mb-1">
+                                        <i class="bi bi-hash text-secondary me-1"></i>
+                                        {{ $userRole === 'admin' ? 'Staff ID / Designation' : 'Student ID Number' }}
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm bg-white"
+                                        value="{{ $authUser->student_id_number ?: ($userRole === 'admin' ? 'SAO-ADMIN-01' : 'N/A') }}"
+                                        readonly style="cursor: not-allowed; color: #1e293b; font-weight: 600;">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label text-muted fs-7 fw-semibold mb-1">
+                                        <i class="bi bi-telephone-fill text-secondary me-1"></i> Registered Phone
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm bg-white"
+                                        value="{{ $authUser->phone ?: 'None Registered' }}" readonly
+                                        style="cursor: not-allowed; color: #1e293b; font-weight: 600;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Change Password Section (Editable) -->
+                        <div class="p-3 rounded-3 border"
+                            style="background: rgba(254, 196, 82, 0.06); border-color: #f59e0b !important;">
+                            <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+                                <i class="bi bi-key-fill text-warning fs-5"></i>
+                                <div>
+                                    <h6 class="fw-bold m-0 text-dark">Change Password</h6>
+                                    <small class="text-muted fs-7">Enter your current password and set a new password
+                                        for your account.</small>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold text-dark fs-7 mb-1">Current Password <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white text-muted"><i
+                                                class="bi bi-lock-fill"></i></span>
+                                        <input type="password" name="current_password" id="profile_current_password"
+                                            class="form-control" placeholder="Enter current password..." required>
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            onclick="togglePasswordVisibility('profile_current_password', this)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-dark fs-7 mb-1">New Password <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white text-muted"><i
+                                                class="bi bi-shield-lock-fill"></i></span>
+                                        <input type="password" name="new_password" id="profile_new_password"
+                                            class="form-control" placeholder="Minimum 6 characters..." required
+                                            minlength="6">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            onclick="togglePasswordVisibility('profile_new_password', this)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.72rem;"><i
+                                            class="bi bi-info-circle me-1"></i> Minimum of 6 characters</small>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold text-dark fs-7 mb-1">Confirm New Password <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white text-muted"><i
+                                                class="bi bi-check-all"></i></span>
+                                        <input type="password" name="new_password_confirmation"
+                                            id="profile_new_password_confirmation" class="form-control"
+                                            placeholder="Re-type new password..." required minlength="6">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            onclick="togglePasswordVisibility('profile_new_password_confirmation', this)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary btn-sm px-3"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-custom btn-sm px-4 fw-bold shadow-sm">
+                            <i class="bi bi-check-circle-fill me-1"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Report Lost Item (Student) -->
     <div class="modal fade" id="reportLostModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <form action="{{ route('student.lost-reports.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('student.lost-reports.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header text-white" style="background-color: var(--primary-color);">
                         <h5 class="modal-header-title fw-bold m-0"><i
@@ -710,6 +865,26 @@
             } else {
                 previewBox.classList.add('d-none');
                 previewImg.src = '#';
+            }
+        }
+
+        // Password show/hide toggle helper
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                }
+            } else {
+                input.type = 'password';
+                if (icon) {
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
             }
         }
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ClaimVerificationController as AdminClaimVerifica
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 use App\Http\Controllers\Admin\LostReportController as AdminLostReportController;
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatbotController;
 
 // Home Root Redirect
@@ -37,6 +38,9 @@ Route::post('/forgot-password', [LoginController::class, 'sendResetLinkEmail'])-
 Route::get('/reset-password/{id}', [LoginController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password/{id}', [LoginController::class, 'resetPassword'])->name('password.update');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// User Profile & Security Routes
+Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
 
 // Student Portal Routes
 Route::prefix('student')->name('student.')->group(function () {
