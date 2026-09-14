@@ -13,7 +13,7 @@
             border-radius: 16px;
             overflow: hidden;
             border: 2px solid var(--primary-color);
-            background-color: #1e1e2d;
+            background-color: #0f172a;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         }
 
@@ -49,45 +49,117 @@
         }
     </style>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    @php
+        $totalReports = $lostReports->count();
+        $openCount = $lostReports->where('status', 'open')->count();
+        $claimPendingCount = $lostReports->where('status', 'claim_pending')->count();
+        $resolvedCount = $lostReports->where('status', 'resolved')->count();
+    @endphp
+
+    <!-- Page Header (Image 2 style) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
-            <h4 class="fw-bold m-0" style="color: var(--primary-color);"><i class="bi bi-card-checklist me-2"></i> My Reported
-                Lost Items</h4>
-            <span class="text-muted">Track lost reports, run live CNN visual matcher scans, and monitor claims.</span>
+            <h3 class="fw-bold m-0" style="color: var(--primary-color);">My Reported Lost Items</h3>
+            <p class="text-muted fs-7 mb-0 mt-1">Track lost reports, run live CNN visual matcher scans, and monitor claims.
+            </p>
         </div>
-        <button class="btn btn-primary-custom px-3 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportLostModal">
-            <i class="bi bi-plus-circle-fill me-1"></i> Report New Lost Item
+        <button class="btn btn-primary-custom btn-sm px-3 py-2 shadow-sm fw-bold" data-bs-toggle="modal"
+            data-bs-target="#reportLostModal">
+            <i class="bi bi-plus-circle-fill me-1"></i> Report Lost Item
         </button>
     </div>
 
-    <div class="card card-custom p-4 mb-4">
+    <!-- Mini Metric Cards (Image 2 style) -->
+    <div class="row g-3 g-md-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Total Reports</div>
+                    <div class="mini-stat-value">{{ $totalReports }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(239, 68, 68, 0.12); color: #ef4444;">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Active Searches</div>
+                    <div class="mini-stat-value text-danger">{{ $openCount }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b;">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Claim Under Review</div>
+                    <div class="mini-stat-value text-warning">{{ $claimPendingCount }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Resolved / Returned</div>
+                    <div class="mini-stat-value text-success">{{ $resolvedCount }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lost Reports Table Card (Image 2 style) -->
+    <div class="card card-custom p-4 mb-4 shadow-sm border-0" style="background: #ffffff; border-radius: 12px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-card-checklist text-danger fs-5"></i>
+                <h5 class="fw-bold m-0 text-dark">Lost Reports Registry</h5>
+            </div>
+            <span class="badge bg-light text-secondary border px-3 py-1 fw-semibold">
+                <i class="bi bi-cpu-fill text-warning me-1"></i> AI Matcher Ready
+            </span>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-hover align-middle m-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Report ID</th>
-                        <th>Item Title & Description</th>
-                        <th>Category</th>
-                        <th>Date Lost</th>
-                        <th>Location</th>
-                        <th>Status & Actions</th>
+                <thead>
+                    <tr style="font-size: 0.8rem; color: #1e293b; border-bottom: 2px solid #f1f5f9;">
+                        <th class="py-3 px-3">Ref No.</th>
+                        <th class="py-3 px-3">Item Details</th>
+                        <th class="py-3 px-3">Category</th>
+                        <th class="py-3 px-3">Date Lost</th>
+                        <th class="py-3 px-3">Location</th>
+                        <th class="py-3 px-3">Status & AI Scan</th>
+                        <th class="py-3 px-3 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($lostReports as $report)
-                        <tr>
-                            <td><strong>#LST-{{ $report->id }}</strong></td>
-                            <td>
+                        <tr style="font-size: 0.82rem; border-bottom: 1px solid #f8fafc;">
+                            <td class="py-3 px-3 fw-bold" style="color: #691220;">
+                                LST-{{ $report->created_at ? $report->created_at->format('Ymd') : '20260914' }}-{{ str_pad($report->id, 4, '0', STR_PAD_LEFT) }}
+                            </td>
+                            <td class="py-3 px-3">
                                 <div class="d-flex align-items-center gap-2">
                                     @if ($report->image_path)
-                                        <img src="{{ $report->image_path }}" class="rounded border" width="40"
-                                            height="40" style="object-fit: cover; cursor: pointer;" alt="{{ $report->title }}"
+                                        <img src="{{ $report->image_path }}" class="rounded border" width="42"
+                                            height="42" style="object-fit: cover; cursor: pointer;"
+                                            alt="{{ $report->title }}"
                                             onclick="openImagePreviewModal('{{ $report->image_path }}', '{{ addslashes($report->title) }}')"
-                                            onerror="this.onerror=null; this.outerHTML='<div class=\'rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1\' style=\'width:40px;height:40px;font-size:8px;line-height:1.1;\'>Invalid image try again</div>';">
+                                            onerror="this.onerror=null; this.outerHTML='<div class=\'rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1\' style=\'width:42px;height:42px;font-size:8px;line-height:1.1;\'>No image</div>';">
                                     @else
                                         <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1"
-                                            style="width: 40px; height: 40px; font-size: 8px; line-height: 1.1;">
-                                            No image
+                                            style="width: 42px; height: 42px; font-size: 8px; line-height: 1.1;">
+                                            <i class="bi bi-image fs-5 opacity-50"></i>
                                         </div>
                                     @endif
                                     <div>
@@ -96,44 +168,59 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="badge bg-light text-dark border">{{ $report->category->name }}</span></td>
-                            <td>{{ $report->date_lost->format('M d, Y') }}</td>
-                            <td><i class="bi bi-geo-alt text-danger me-1"></i> {{ $report->location }}</td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div>
-                                        @if ($report->status === 'open')
-                                            <span class="badge bg-danger p-2 px-3 badge-open-search"
-                                                onclick="startCnnScan('{{ $report->id }}', '{{ addslashes($report->title) }}', '{{ $report->image_path }}')"
-                                                title="Click to run live CNN AI Visual Matcher">
-                                                <i class="bi bi-cpu-fill me-1 text-warning"></i> Open Search
-                                            </span>
-                                        @elseif($report->status === 'claim_pending')
-                                            <span class="badge bg-warning text-dark p-2 px-3">
-                                                <i class="bi bi-clock-history me-1"></i> Claim Pending
-                                            </span>
-                                        @elseif($report->status === 'resolved')
-                                            <span class="badge bg-success p-2 px-3">
-                                                <i class="bi bi-check-circle me-1"></i> Resolved
-                                            </span>
-                                        @endif
-                                    </div>
-                                    <form action="{{ route('student.lost-reports.destroy', $report->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this lost report?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Report">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                            <td class="py-3 px-3">
+                                <span class="badge bg-light text-secondary border px-2 py-1">
+                                    {{ $report->category->name ?? 'General' }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 text-muted">
+                                {{ $report->date_lost->format('M d, Y') }}
+                            </td>
+                            <td class="py-3 px-3">
+                                <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i>
+                                    {{ $report->location }}</small>
+                            </td>
+                            <td class="py-3 px-3">
+                                @if ($report->status === 'open')
+                                    <button type="button"
+                                        class="badge rounded-pill bg-danger text-white border-0 shadow-sm p-2 px-3 badge-open-search"
+                                        onclick="startCnnScan('{{ $report->id }}', '{{ addslashes($report->title) }}', '{{ $report->image_path }}')"
+                                        title="Click to run live CNN AI Visual Matcher">
+                                        <i class="bi bi-cpu-fill me-1 text-warning"></i> Open Search &bull; AI Scan
+                                    </button>
+                                @elseif($report->status === 'claim_pending')
+                                    <span
+                                        class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 fw-semibold">
+                                        <i class="bi bi-clock-history me-1"></i> Claim Pending
+                                    </span>
+                                @elseif($report->status === 'resolved')
+                                    <span
+                                        class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold">
+                                        <i class="bi bi-check-circle me-1"></i> Resolved
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-3 text-center">
+                                <form action="{{ route('student.lost-reports.destroy', $report->id) }}" method="POST"
+                                    data-confirm="Are you sure you want to delete this lost report? This action cannot be undone."
+                                    class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="btn btn-sm btn-light border text-danger shadow-sm px-2 py-1"
+                                        title="Delete Report">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                You have not submitted any lost item reports yet. Click "Report New Lost Item" above to
-                                report one.
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                                <h6 class="fw-bold text-dark mb-1">No Lost Reports Yet</h6>
+                                <p class="fs-7 text-muted mb-3">You have not submitted any lost item reports. Click below
+                                    to submit one.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -145,8 +232,9 @@
     <!-- Modal: Live CNN AI Visual Scanner -->
     <div class="modal fade" id="cnnScanModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e1e2d 0%, #3a151f 100%);">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header text-white"
+                    style="background: linear-gradient(135deg, #691220 0%, #4d0a15 100%);">
                     <h5 class="modal-header-title fw-bold m-0 text-warning">
                         <i class="bi bi-cpu-fill me-2"></i> CNN AI Visual Similarity Scan
                     </h5>
@@ -166,7 +254,7 @@
                         <h5 class="fw-bold text-dark mb-1" id="scanItemTitle">Analyzing Item Features...</h5>
                         <p class="text-muted fs-7 mb-3">MobileNetV2 CNN Feature Vector Extraction</p>
 
-                        <div class="progress mb-3 shadow-sm" style="height: 10px;">
+                        <div class="progress mb-3 shadow-sm" style="height: 8px;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
                                 role="progressbar" style="width: 100%;"></div>
                         </div>
@@ -180,7 +268,8 @@
                     <!-- Results View (Hidden initially) -->
                     <div id="cnnResultsState" class="d-none text-start">
                         <div class="d-flex align-items-center justify-content-between pb-2 mb-3 border-bottom">
-                            <h6 class="fw-bold m-0 text-dark"><i class="bi bi-magic text-warning me-1"></i> AI Finder</h6>
+                            <h6 class="fw-bold m-0 text-dark"><i class="bi bi-magic text-warning me-1"></i> Potential
+                                Visual Matches</h6>
                             <span class="badge bg-success" id="matchesFoundBadge">0 Matches</span>
                         </div>
 
@@ -190,7 +279,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close Scanner</button>
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Close
+                        Scanner</button>
                 </div>
             </div>
         </div>
@@ -201,11 +291,13 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold" id="imagePreviewTitle"><i class="bi bi-image me-2 text-warning"></i> Item Image Preview</h5>
+                    <h5 class="modal-title fw-bold" id="imagePreviewTitle"><i class="bi bi-image me-2 text-warning"></i>
+                        Item Image Preview</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-0 text-center bg-dark">
-                    <img id="previewModalImage" src="" class="img-fluid rounded-bottom" style="max-height: 75vh; object-fit: contain;" alt="Image Preview">
+                    <img id="previewModalImage" src="" class="img-fluid rounded-bottom"
+                        style="max-height: 75vh; object-fit: contain;" alt="Image Preview">
                 </div>
             </div>
         </div>
@@ -221,7 +313,8 @@
 
             document.getElementById('scanItemTitle').innerText = 'Scanning: ' + title;
             const imgEl = document.getElementById('scanItemImage');
-            const noImgSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130' viewBox='0 0 130 130'><rect width='130' height='130' fill='%231e1e2d'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fec452' font-family='sans-serif' font-size='14' font-weight='bold'>No image</text></svg>";
+            const noImgSvg =
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130' viewBox='0 0 130 130'><rect width='130' height='130' fill='%231e1e2d'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fec452' font-family='sans-serif' font-size='14' font-weight='bold'>No image</text></svg>";
             if (imagePath && imagePath !== 'null' && imagePath !== 'undefined' && imagePath !== '') {
                 imgEl.src = imagePath;
                 imgEl.onerror = function() {
@@ -257,31 +350,31 @@
                         badge.className = 'badge bg-success';
 
                         container.innerHTML = data.matches.map(m => `
-                    <div class="card p-3 mb-3 border-warning shadow-sm">
+                    <div class="card p-3 mb-3 border-warning shadow-sm" style="border-radius: 10px;">
                         <div class="row align-items-center g-3">
                             <div class="col-auto">
                                 ${m.image_path ? `
-                                    <img src="${m.image_path}" class="rounded border" width="65" height="65" style="object-fit: cover; cursor: pointer;" alt="${m.title}" onclick="openImagePreviewModal('${m.image_path}', '${m.title.replace(/'/g, "\\'")}')" onerror="this.onerror=null; this.outerHTML='<div class=\\'rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1\\' style=\\'width:65px;height:65px;font-size:9px;line-height:1.1;\\'>Invalid image try again</div>';">
-                                ` : `
-                                    <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1" style="width:65px;height:65px;font-size:9px;line-height:1.1;">No image</div>
-                                `}
+                                                    <img src="${m.image_path}" class="rounded border" width="65" height="65" style="object-fit: cover; cursor: pointer;" alt="${m.title}" onclick="openImagePreviewModal('${m.image_path}', '${m.title.replace(/'/g, "\\'")}')" onerror="this.onerror=null; this.outerHTML='<div class=\\'rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1\\' style=\\'width:65px;height:65px;font-size:9px;line-height:1.1;\\'>No image</div>';">
+                                                ` : `
+                                                    <div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center text-center p-1" style="width:65px;height:65px;font-size:9px;line-height:1.1;">No image</div>
+                                                `}
                             </div>
                             <div class="col">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <span class="badge ${m.score >= 85 ? 'bg-success' : 'bg-warning text-dark'} fw-bold"><i class="bi bi-cpu-fill me-1"></i> ${m.score}% Match</span>
                                     <span class="badge bg-info text-dark"><i class="bi bi-building me-1"></i> ${m.storage_location}</span>
                                 </div>
-                                <h6 class="fw-bold m-0 text-primary">${m.title}</h6>
+                                <h6 class="fw-bold m-0" style="color: var(--primary-color);">${m.title}</h6>
                                 <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i> Found at: ${m.location} • ${m.date_found}</small>
                             </div>
                             <div class="col-auto">
                                 ${m.status === 'available' ? `
-                                        <button class="btn btn-sm btn-secondary-custom fw-bold px-3" onclick="openClaimModal('${m.id}', '${m.title.replace(/'/g, "\\'")}', '${m.storage_location.replace(/'/g, "\\'")}', '${lostId}')">
-                                            <i class="bi bi-shield-check me-1"></i> Claim Match
-                                        </button>
-                                    ` : `
-                                        <button class="btn btn-sm btn-outline-secondary disabled fw-bold" disabled>Under Claim</button>
-                                    `}
+                                                        <button class="btn btn-sm btn-primary-custom fw-bold px-3" onclick="openClaimModal('${m.id}', '${m.title.replace(/'/g, "\\'")}', '${m.storage_location.replace(/'/g, "\\'")}', '${lostId}')">
+                                                            <i class="bi bi-shield-check me-1"></i> Claim Match
+                                                        </button>
+                                                    ` : `
+                                                        <button class="btn btn-sm btn-outline-secondary disabled fw-bold" disabled>Under Claim</button>
+                                                    `}
                             </div>
                         </div>
                     </div>
@@ -312,7 +405,8 @@
 
         function openImagePreviewModal(src, title) {
             if (!src || src.startsWith('data:image/svg+xml')) return;
-            document.getElementById('imagePreviewTitle').innerHTML = `<i class="bi bi-image me-2 text-warning"></i> ${title || 'Item Image Preview'}`;
+            document.getElementById('imagePreviewTitle').innerHTML =
+                `<i class="bi bi-image me-2 text-warning"></i> ${title || 'Item Image Preview'}`;
             document.getElementById('previewModalImage').src = src;
             const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
             modal.show();

@@ -15,10 +15,6 @@
             <a href="{{ route('admin.lost-reports') }}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
                 <i class="bi bi-list-check me-1"></i> All Reports
             </a>
-            <button class="btn btn-primary-custom btn-sm px-3 py-2 fw-bold shadow-sm" data-bs-toggle="modal"
-                data-bs-target="#reportFoundModal">
-                <i class="bi bi-plus-circle-fill me-1"></i> Add Found Item
-            </button>
         </div>
     </div>
 

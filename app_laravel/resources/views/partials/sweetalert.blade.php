@@ -222,7 +222,11 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             form.dataset.confirmed = 'true';
-                            form.submit();
+                            if (typeof form.requestSubmit === 'function') {
+                                form.requestSubmit();
+                            } else {
+                                form.submit();
+                            }
                         }
                     });
                 }

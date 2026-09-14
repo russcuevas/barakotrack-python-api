@@ -93,12 +93,6 @@
                     class="nav-link {{ request()->routeIs('admin.lost-reports') ? 'active' : '' }}">
                     <i class="bi bi-journal-text"></i> Lost Reports
                 </a>
-
-                <div class="nav-label mt-3">QUICK ACTIONS</div>
-                <a href="#" class="nav-link" style="color: #fec452;" data-bs-toggle="modal"
-                    data-bs-target="#reportFoundModal">
-                    <i class="bi bi-plus-circle-fill text-warning"></i> Add Found Item
-                </a>
             @else
                 <!-- Student Menu -->
                 <a href="{{ route('student.dashboard') }}"
@@ -120,12 +114,6 @@
                 <a href="{{ route('student.claims') }}"
                     class="nav-link {{ request()->routeIs('student.claims') ? 'active' : '' }}">
                     <i class="bi bi-shield-check"></i> My Claims
-                </a>
-
-                <div class="nav-label mt-3">QUICK ACTIONS</div>
-                <a href="#" class="nav-link" style="color: #fec452;" data-bs-toggle="modal"
-                    data-bs-target="#reportLostModal">
-                    <i class="bi bi-file-earmark-plus-fill text-warning"></i> Report Lost Item
                 </a>
             @endif
         </div>
@@ -176,8 +164,7 @@
 
         <!-- App Footer (Image 2 style) -->
         <footer class="app-footer py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>University of Batangas • Lost and Found Management System (BarakoTrack)</div>
-            <div>&copy; {{ date('Y') }} UB. All rights reserved.</div>
+            <div>&copy; {{ date('Y') }} University of Batangas. All rights reserved.</div>
         </footer>
     </div>
 
@@ -185,8 +172,7 @@
     <div class="modal fade" id="reportLostModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <form action="{{ route('student.lost-reports.store') }}" method="POST"
-                    enctype="multipart/form-data">
+                <form action="{{ route('student.lost-reports.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header text-white" style="background-color: var(--primary-color);">
                         <h5 class="modal-header-title fw-bold m-0"><i

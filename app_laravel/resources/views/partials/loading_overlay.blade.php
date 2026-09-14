@@ -73,12 +73,22 @@
         document.addEventListener('DOMContentLoaded', function () {
             const overlay = document.getElementById('globalLoadingOverlay');
 
-            // Attach submit listener to all forms on the page
+            // Attach submit listener in BUBBLING phase (false) so that inline onsubmit / confirm() runs FIRST
             document.addEventListener('submit', function (e) {
+                // If submission was cancelled by confirm() or e.preventDefault(), do NOT show overlay
+                if (e.defaultPrevented) {
+                    return;
+                }
+
                 const form = e.target;
 
                 // Native browser HTML5 validation check
                 if (form.checkValidity && !form.checkValidity()) {
+                    return;
+                }
+
+                // If form opted out of global loading overlay
+                if (form.hasAttribute('data-no-loading')) {
                     return;
                 }
 
@@ -93,7 +103,16 @@
                     btn.disabled = true;
                     btn.classList.add('disabled');
                 });
-            }, true);
+            }, false); // IMPORTANT: false (bubbling) ensures onsubmit/confirm runs before overlay activates
+        });
+
+        // If user navigates back (bfcache) or cancels, reset overlay and buttons
+        window.addEventListener('pageshow', function () {
+            window.hideGlobalLoading();
+            document.querySelectorAll('button[type="submit"].disabled, input[type="submit"].disabled').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            });
         });
 
         window.showGlobalLoading = function(title, message) {
@@ -108,6 +127,10 @@
         window.hideGlobalLoading = function() {
             const overlay = document.getElementById('globalLoadingOverlay');
             if (overlay) overlay.classList.remove('active');
+            document.querySelectorAll('button[type="submit"].disabled, input[type="submit"].disabled').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            });
         };
     }
 </script>
