@@ -16,18 +16,20 @@ class ChatbotController extends Controller
         $query = $validated['query'];
         $userName = auth()->check() ? auth()->user()->name : 'Student';
 
-        // Try Python AI Microservice on localhost:5000
-        try {
-            $response = Http::timeout(2)->post('http://127.0.0.1:5000/chatbot', [
-                'query' => $query,
-                'user_name' => $userName
-            ]);
+        // Try Python AI Microservice if online
+        if (\App\Services\CNNEngineService::isServiceOnline()) {
+            try {
+                $response = Http::connectTimeout(1)->timeout(2)->post(\App\Services\CNNEngineService::getServiceUrl() . '/chatbot', [
+                    'query' => $query,
+                    'user_name' => $userName
+                ]);
 
-            if ($response->successful()) {
-                return response()->json($response->json());
+                if ($response->successful()) {
+                    return response()->json($response->json());
+                }
+            } catch (\Exception $e) {
+                // Fallback response if Python service is offline
             }
-        } catch (\Exception $e) {
-            // Fallback response if Python service is offline
         }
 
         // Built-in PHP Intelligent Response Engine

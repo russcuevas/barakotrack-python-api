@@ -95,9 +95,9 @@ class DashboardController extends Controller
         $hasImages = false;
 
         // 1. Try stored CNN feature vectors via Python microservice
-        if (!empty($lost->feature_vector) && !empty($found->feature_vector)) {
+        if (!empty($lost->feature_vector) && !empty($found->feature_vector) && \App\Services\CNNEngineService::isServiceOnline()) {
             try {
-                $response = Http::timeout(2)->post('http://127.0.0.1:5000/compare-features', [
+                $response = Http::connectTimeout(1)->timeout(2)->post(\App\Services\CNNEngineService::getServiceUrl() . '/compare-features', [
                     'vec1' => $lost->feature_vector,
                     'vec2' => $found->feature_vector
                 ]);
@@ -112,13 +112,13 @@ class DashboardController extends Controller
         }
 
         // 2. Direct CNN image file comparison via Python microservice
-        if (!$hasImages) {
+        if (!$hasImages && \App\Services\CNNEngineService::isServiceOnline()) {
             $path1 = $this->resolveImagePath($lost->image_path);
             $path2 = $this->resolveImagePath($found->image_path);
 
             if ($path1 && $path2) {
                 try {
-                    $response = Http::timeout(3)->post('http://127.0.0.1:5000/compare-images', [
+                    $response = Http::connectTimeout(1)->timeout(3)->post(\App\Services\CNNEngineService::getServiceUrl() . '/compare-images', [
                         'path1' => $path1,
                         'path2' => $path2
                     ]);

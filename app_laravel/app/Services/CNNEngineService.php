@@ -9,6 +9,60 @@ use App\Models\Claim;
 
 class CNNEngineService
 {
+    protected static $isOnlineCache = null;
+
+    /**
+     * Get the configured Python AI Microservice base URL
+     */
+    public static function getServiceUrl(): string
+    {
+        return rtrim(env('PYTHON_SERVICE_URL', 'http://127.0.0.1:5000'), '/');
+    }
+
+    /**
+     * Check if Python AI Microservice is online with a 1-second timeout (cached per request)
+     */
+    public static function isServiceOnline(): bool
+    {
+        if (static::$isOnlineCache !== null) {
+            return static::$isOnlineCache;
+        }
+
+        try {
+            $resp = Http::connectTimeout(1)->timeout(1)->get(static::getServiceUrl() . '/health');
+            static::$isOnlineCache = $resp->successful();
+        } catch (\Exception $e) {
+            static::$isOnlineCache = false;
+        }
+
+        return static::$isOnlineCache;
+    }
+
+    /**
+     * Extract MobileNetV2 CNN feature vector from an image file
+     */
+    public static function extractFeatures($fullPath, $filename)
+    {
+        if (!static::isServiceOnline() || !file_exists($fullPath)) {
+            return null;
+        }
+
+        try {
+            $response = Http::connectTimeout(1)
+                ->timeout(4)
+                ->attach('image', file_get_contents($fullPath), $filename)
+                ->post(static::getServiceUrl() . '/extract-features');
+
+            if ($response->successful()) {
+                return $response->json('feature_vector');
+            }
+        } catch (\Exception $e) {
+            // Service offline or timeout fallback
+        }
+
+        return null;
+    }
+
     /**
      * Computes similarity score for a Claim (0.0 to 100.0%)
      */
@@ -29,9 +83,9 @@ class CNNEngineService
             $proofPath = static::resolveImagePath($claim->proof_image);
             $foundPath = static::resolveImagePath($found->image_path);
 
-            if ($proofPath && $foundPath) {
+            if ($proofPath && $foundPath && static::isServiceOnline()) {
                 try {
-                    $response = Http::timeout(3)->post('http://127.0.0.1:5000/compare-images', [
+                    $response = Http::connectTimeout(1)->timeout(3)->post(static::getServiceUrl() . '/compare-images', [
                         'path1' => $proofPath,
                         'path2' => $foundPath
                     ]);
@@ -62,9 +116,9 @@ class CNNEngineService
         $hasImages = false;
 
         // 1. Stored feature vectors comparison
-        if (!empty($lost->feature_vector) && !empty($found->feature_vector)) {
+        if (!empty($lost->feature_vector) && !empty($found->feature_vector) && static::isServiceOnline()) {
             try {
-                $response = Http::timeout(2)->post('http://127.0.0.1:5000/compare-features', [
+                $response = Http::connectTimeout(1)->timeout(2)->post(static::getServiceUrl() . '/compare-features', [
                     'vec1' => $lost->feature_vector,
                     'vec2' => $found->feature_vector
                 ]);
@@ -79,13 +133,13 @@ class CNNEngineService
         }
 
         // 2. Direct Image File Comparison
-        if (!$hasImages) {
+        if (!$hasImages && static::isServiceOnline()) {
             $path1 = static::resolveImagePath($lost->image_path);
             $path2 = static::resolveImagePath($found->image_path);
 
             if ($path1 && $path2) {
                 try {
-                    $response = Http::timeout(3)->post('http://127.0.0.1:5000/compare-images', [
+                    $response = Http::connectTimeout(1)->timeout(3)->post(static::getServiceUrl() . '/compare-images', [
                         'path1' => $path1,
                         'path2' => $path2
                     ]);

@@ -59,19 +59,9 @@ class InventoryController extends Controller
             $file->move(public_path('images'), $filename);
             $imagePath = '/images/' . $filename;
 
-            // Call Python service to extract CNN feature vector
-            try {
-                $fullPath = public_path('images/' . $filename);
-                $response = Http::attach(
-                    'image', file_get_contents($fullPath), $filename
-                )->post('http://127.0.0.1:5000/extract-features');
-
-                if ($response->successful()) {
-                    $featureVector = $response->json('feature_vector');
-                }
-            } catch (\Exception $e) {
-                // Feature extraction fallback
-            }
+            // Extract CNN feature vector via Python service if available
+            $fullPath = public_path('images/' . $filename);
+            $featureVector = \App\Services\CNNEngineService::extractFeatures($fullPath, $filename);
         }
 
         FoundItem::create([
