@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Custom UB BarakoTrack CSS -->
-    <link rel="stylesheet" href="{{ asset('css/barako_track.css') }}">
+    <!-- Custom UB BarakoTrack CSS (Cache-Busting for Deployment) -->
+    <link rel="stylesheet" href="{{ asset('css/barako_track.css') }}?v={{ file_exists(public_path('css/barako_track.css')) ? filemtime(public_path('css/barako_track.css')) : time() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
@@ -146,35 +146,8 @@
 
         <!-- Content Body -->
         <main class="content-body">
-            <!-- Flash Notifications -->
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2"
-                    role="alert">
-                    <i class="bi bi-check-circle-fill fs-5"></i>
-                    <div>{{ session('success') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @if (session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center gap-2"
-                    role="alert">
-                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                    <div>{{ session('warning') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+            <!-- Top-Right SweetAlert Notifications -->
+            @include('partials.sweetalert')
 
             @yield('content')
         </main>
@@ -410,18 +383,27 @@
                     </div>
                 </div>
 
-                <div class="chatbot-suggestions" id="chatbotSuggestions">
-                    <div class="suggestion-chip" onclick="sendChatQuery('How to report a lost item?')">
-                        <i class="bi bi-file-earmark-plus me-1"></i> Report Lost
+                <div class="chatbot-suggestions-wrapper">
+                    <div class="chatbot-suggestions-header">
+                        <span><i class="bi bi-stars text-warning me-1"></i> Quick Question Prompts:</span>
                     </div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('Where is the lost and found office?')">
-                        <i class="bi bi-geo-alt me-1"></i> SAO Office
-                    </div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('How to claim an item?')">
-                        <i class="bi bi-shield-check me-1"></i> Claim Info
-                    </div>
-                    <div class="suggestion-chip" onclick="sendChatQuery('Office Hours')">
-                        <i class="bi bi-clock me-1"></i> Office Hours
+                    <div class="chatbot-suggestions" id="chatbotSuggestions">
+                        <div class="suggestion-chip" onclick="sendChatQuery('How to report a found item?')">
+                            <i class="bi bi-box-arrow-in-down text-warning"></i>
+                            <span>Report Found Item</span>
+                        </div>
+                        <div class="suggestion-chip" onclick="sendChatQuery('How to report a lost item?')">
+                            <i class="bi bi-file-earmark-plus text-warning"></i>
+                            <span>Report Lost Item</span>
+                        </div>
+                        <div class="suggestion-chip" onclick="sendChatQuery('How to claim an item?')">
+                            <i class="bi bi-shield-check text-warning"></i>
+                            <span>How to Claim Item</span>
+                        </div>
+                        <div class="suggestion-chip" onclick="sendChatQuery('Where is the lost and found office?')">
+                            <i class="bi bi-geo-alt-fill text-warning"></i>
+                            <span>SAO Office & Hours</span>
+                        </div>
                     </div>
                 </div>
 
@@ -502,6 +484,27 @@
                     </div>
                 </div>
             `;
+            const sugBox = document.getElementById('chatbotSuggestions');
+            if (sugBox) {
+                sugBox.innerHTML = `
+                    <div class="suggestion-chip" onclick="sendChatQuery('How to report a found item?')">
+                        <i class="bi bi-box-arrow-in-down text-warning"></i>
+                        <span>Report Found Item</span>
+                    </div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('How to report a lost item?')">
+                        <i class="bi bi-file-earmark-plus text-warning"></i>
+                        <span>Report Lost Item</span>
+                    </div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('How to claim an item?')">
+                        <i class="bi bi-shield-check text-warning"></i>
+                        <span>How to Claim Item</span>
+                    </div>
+                    <div class="suggestion-chip" onclick="sendChatQuery('Where is the lost and found office?')">
+                        <i class="bi bi-geo-alt-fill text-warning"></i>
+                        <span>SAO Office & Hours</span>
+                    </div>
+                `;
+            }
         }
 
         function handleKeyPress(e) {
@@ -571,16 +574,48 @@
                     `;
                     chatBox.appendChild(botRow);
 
-                    // Dynamic Suggestion Chips (2x2 Grid)
+                    // Dynamic Suggestion Chips (2x2 Clean Grid - 100% visible, no scrolling needed)
                     if (data.response.suggestions && data.response.suggestions.length > 0) {
                         const sugBox = document.getElementById('chatbotSuggestions');
                         if (sugBox) {
                             const topSuggestions = data.response.suggestions.slice(0, 4);
-                            sugBox.innerHTML = topSuggestions.map(s => `
-                                <div class="suggestion-chip" onclick="sendChatQuery('${s.replace(/'/g, "\\'")}')">
-                                    <i class="bi bi-chat-text me-1"></i> ${s}
-                                </div>
-                            `).join('');
+                            sugBox.innerHTML = topSuggestions.map(s => {
+                                let icon = 'bi-chat-dots-fill';
+                                let label = s;
+                                const lower = s.toLowerCase();
+                                if (lower.includes('found') && (lower.includes('report') || lower.includes('how') || lower.includes('surrender'))) {
+                                    icon = 'bi-box-arrow-in-down';
+                                    label = 'Report Found Item';
+                                } else if (lower.includes('lost') && lower.includes('report')) {
+                                    icon = 'bi-file-earmark-plus';
+                                    label = 'Report Lost Item';
+                                } else if (lower.includes('claim') || lower.includes('proof')) {
+                                    icon = 'bi-shield-check';
+                                    label = 'How to Claim Item';
+                                } else if (lower.includes('where') || lower.includes('office') || lower.includes('location')) {
+                                    icon = 'bi-geo-alt-fill';
+                                    label = 'SAO Office Location';
+                                } else if (lower.includes('hour') || lower.includes('time') || lower.includes('schedule') || lower.includes('open')) {
+                                    icon = 'bi-clock-fill';
+                                    label = 'Office Hours';
+                                } else if (lower.includes('search') && lower.includes('found')) {
+                                    icon = 'bi-search';
+                                    label = 'Search Found Items';
+                                } else if (lower.includes('search') && lower.includes('lost')) {
+                                    icon = 'bi-search';
+                                    label = 'Search Lost Items';
+                                } else if (lower.includes('contact') || lower.includes('support')) {
+                                    icon = 'bi-telephone-fill';
+                                    label = 'Contact SAO Office';
+                                }
+
+                                return `
+                                    <div class="suggestion-chip" onclick="sendChatQuery('${s.replace(/'/g, "\\'")}')" title="${s}">
+                                        <i class="bi ${icon} text-warning"></i>
+                                        <span>${label}</span>
+                                    </div>
+                                `;
+                            }).join('');
                         }
                     }
                 }

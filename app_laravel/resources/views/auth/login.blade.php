@@ -164,20 +164,7 @@
 
                     <h5 class="fw-bold text-dark mb-4 text-start">Log into BarakoTrack</h5>
 
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show fs-7 py-2 text-start"
-                            role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if ($errors->any() && !$errors->hasBag('registration') && !($errors->has('name') || $errors->has('student_id_number') || $errors->has('password_confirmation')))
-                        <div class="alert alert-danger alert-dismissible fade show fs-7 py-2 text-start" role="alert">
-                            {{ $errors->first() }}
-                            <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+                    @include('partials.sweetalert')
 
                     <form action="{{ route('login') }}" method="POST" id="loginForm">
                         @csrf
