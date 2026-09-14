@@ -1,32 +1,33 @@
 /* ==========================================
    UB BarakoTrack - Lost & Found CSS System
+   Refined to match Reference Dashboard UI (EBS Layout)
    ========================================== */
 
 :root {
-    /* Brand Palette - UB BarakoTrack Colors */
-    --primary-color: #752738;
-    --primary-hover: #5a1e2c;
-    --primary-light: #9a3a50;
+    /* Brand Palette - UB Deep Maroon & Warm Amber (Matching Image 2) */
+    --primary-color: #691220;
+    --primary-hover: #500c17;
+    --primary-light: #841b2b;
     --secondary-color: #fec452;
     --secondary-hover: #ffd37a;
     --accent-color: #fec452;
 
     /* Backgrounds */
-    --body-bg: #f4f6fb;
+    --body-bg: #f8fafc;
     --card-bg: #ffffff;
-    --sidebar-bg: #1e1e2d;
-    --sidebar-hover: rgba(254, 196, 82, 0.08);
-    --sidebar-active: rgba(254, 196, 82, 0.14);
+    --sidebar-bg: #61111e;
+    --sidebar-hover: rgba(254, 196, 82, 0.12);
+    --sidebar-active: linear-gradient(135deg, #a35300 0%, #781726 100%);
 
     /* Text Colors */
     --text-main: #1e293b;
     --text-muted-custom: #64748b;
-    --sidebar-text: rgba(255, 255, 255, 0.65);
-    --sidebar-text-active: #fec452;
+    --sidebar-text: rgba(255, 255, 255, 0.85);
+    --sidebar-text-active: #ffffff;
 
     /* Layout Dimensions */
     --sidebar-width: 260px;
-    --top-header-height: 70px;
+    --top-header-height: 56px;
     --transition-speed: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -37,94 +38,180 @@ body {
     overflow-x: hidden;
 }
 
-/* Sidebar Styling */
+/* Sidebar Styling (Deep Maroon - Image 2) */
 .sidebar {
     width: var(--sidebar-width);
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--sidebar-bg);
+    background: linear-gradient(180deg, #66111f 0%, #4d0a15 100%);
     color: var(--sidebar-text);
     z-index: 1040;
     transition: transform var(--transition-speed);
     display: flex;
     flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-brand {
-    height: var(--top-header-height);
+    height: 68px;
     display: flex;
     align-items: center;
-    padding: 0 1.5rem;
-    background: rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0 1.25rem;
+    background: rgba(0, 0, 0, 0.18);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sidebar-brand h4 {
+.brand-badge-box {
+    width: 38px;
+    height: 38px;
+    background: #fec452;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+/* Sidebar User Box (Under Brand, Exactly like Image 2) */
+.sidebar-user-box {
+    padding: 0.95rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #fec452;
+    color: #66111f;
+    font-weight: 800;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.sidebar-user-info {
+    overflow: hidden;
+    line-height: 1.25;
+}
+
+.sidebar-user-name {
     color: #ffffff;
     font-weight: 700;
-    margin: 0;
-    letter-spacing: 0.5px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.sidebar-brand span {
-    color: var(--secondary-color);
+.sidebar-user-role {
+    color: #fec452;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sidebar-menu {
-    padding: 1.25rem 0.75rem;
+    padding: 0.85rem 0.75rem;
     flex-grow: 1;
     overflow-y: auto;
 }
 
 .nav-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.4);
-    padding: 0.75rem 1rem 0.25rem;
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 0.6rem 0.85rem 0.35rem;
+    font-weight: 700;
 }
 
 .sidebar .nav-link {
-    color: var(--sidebar-text);
-    padding: 0.75rem 1rem;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0.68rem 1rem;
     border-radius: 8px;
     margin-bottom: 4px;
     display: flex;
     align-items: center;
     font-weight: 500;
+    font-size: 0.88rem;
     transition: all 0.2s ease;
     text-decoration: none;
 }
 
 .sidebar .nav-link i {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     margin-right: 12px;
-    width: 24px;
+    width: 22px;
     text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.7);
     transition: color 0.2s ease;
 }
 
 .sidebar .nav-link:hover {
     color: #ffffff;
-    background-color: var(--sidebar-hover);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar .nav-link:hover i {
-    color: var(--secondary-color);
+    color: #fec452;
 }
 
+/* Active Nav Item - Image 2 Amber Pill */
 .sidebar .nav-link.active {
-    color: var(--sidebar-text-active);
-    background-color: var(--sidebar-active);
-    font-weight: 600;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #a35300 0%, #781726 100%) !important;
+    border: 1px solid rgba(254, 196, 82, 0.45) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
 .sidebar .nav-link.active i {
-    color: var(--secondary-color);
+    color: #fec452 !important;
+}
+
+/* Sidebar Footer (Pinned Logout at Bottom like Image 2) */
+.sidebar-footer {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.55rem 1rem;
+    background: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.sidebar-logout-btn:hover {
+    background: rgba(220, 38, 38, 0.35);
+    border-color: #ef4444;
+    color: #ffffff;
 }
 
 /* Main Content Area */
@@ -138,9 +225,9 @@ body {
 
 .top-header {
     height: var(--top-header-height);
-    background-color: var(--card-bg);
+    background-color: #ffffff;
     border-bottom: 1px solid #e2e8f0;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -150,9 +237,171 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
+.header-date-badge {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.header-power-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1.5px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.header-power-btn:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
 .content-body {
-    padding: 2rem;
+    padding: 1.5rem 1.85rem;
     flex-grow: 1;
+}
+
+/* Row 1: Primary Full-Border Stats Cards (Image 2 style) */
+.stat-card-amber {
+    background: #ffffff;
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-red {
+    background: #ffffff;
+    border: 2px solid #ef4444;
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-green {
+    background: #ffffff;
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-blue {
+    background: #ffffff;
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-amber:hover, .stat-card-red:hover, .stat-card-green:hover, .stat-card-blue:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card-top-icon {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 1.15rem;
+}
+
+.stat-card-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.stat-card-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.stat-card-sub {
+    font-size: 0.74rem;
+    color: #64748b;
+    display: block;
+}
+
+/* Row 2: Mini Metric Cards (Image 2 style) */
+.mini-stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mini-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+.mini-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.mini-stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.mini-stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+/* App Footer */
+.app-footer {
+    border-top: 1px solid #e2e8f0;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.78rem;
 }
 
 /* Custom Buttons */

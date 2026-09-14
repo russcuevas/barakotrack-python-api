@@ -4,50 +4,69 @@
 
 @section('content')
     @include('partials.loading_overlay')
+    <!-- Admin Header (Image 2 style) -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
-            <h4 class="fw-bold m-0 text-danger"><i class="bi bi-shield-lock-fill me-2"></i> Admin Dashboard</h4>
-            <span class="text-muted fs-7">Overview of campus found inventory, pending verification claims, and student
-                reports.</span>
+            <h3 class="fw-bold m-0" style="color: var(--primary-color);">Admin Dashboard</h3>
+            <p class="text-muted fs-7 mb-0 mt-1">Overview and real-time status of lost and found inventory at University of
+                Batangas</p>
         </div>
-        <button class="btn btn-secondary-custom btn-sm px-3 py-2 fw-bold shadow-sm" data-bs-toggle="modal"
-            data-bs-target="#reportFoundModal">
-            <i class="bi bi-box-arrow-in-down me-1"></i> Add Found Item
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('admin.lost-reports') }}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
+                <i class="bi bi-list-check me-1"></i> All Reports
+            </a>
+            <button class="btn btn-primary-custom btn-sm px-3 py-2 fw-bold shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#reportFoundModal">
+                <i class="bi bi-plus-circle-fill me-1"></i> Add Found Item
+            </button>
+        </div>
     </div>
 
-    <!-- Admin Stat Cards -->
-    <div class="row g-3 g-md-4 mb-4">
+    <!-- Row 1: Primary Full-Border Stats Cards (Image 2 style) -->
+    <div class="row g-3 g-md-4 mb-3">
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: #1e1e2d;">
-                <div class="text-muted fs-7 fw-semibold">Found Items in Storage</div>
-                <h2 class="fw-bold my-1 text-dark">{{ $storageCount }}</h2>
-                <small class="text-muted"><i class="bi bi-archive"></i> Ready for student claim</small>
+            <div class="stat-card-amber h-100">
+                <i class="bi bi-box-seam-fill text-warning stat-card-top-icon"></i>
+                <div class="stat-card-title">Found in Storage</div>
+                <div class="stat-card-num">{{ $storageCount }}</div>
+                <div class="stat-card-sub text-warning fw-semibold">
+                    <i class="bi bi-shield-check me-1"></i>Secured in SAO storage
+                </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: #fec452;">
-                <div class="text-muted fs-7 fw-semibold">Pending Claim Verification</div>
-                <h2 class="fw-bold my-1 text-warning">{{ $pendingClaimsCount }}</h2>
-                <small class="text-warning fw-semibold"><i class="bi bi-exclamation-circle-fill"></i> Requires SAO
-                    decision</small>
+            <div class="stat-card-red h-100">
+                <i class="bi bi-exclamation-triangle-fill text-danger stat-card-top-icon"></i>
+                <div class="stat-card-title">Pending Claims</div>
+                <div class="stat-card-num text-danger">{{ $pendingClaimsCount }}</div>
+                <div class="stat-card-sub text-danger fw-semibold">
+                    <i class="bi bi-clock-history me-1"></i>Requires SAO decision
+                </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: #0dcaf0;">
-                <div class="text-muted fs-7 fw-semibold">Ready for Pick-up</div>
-                <h2 class="fw-bold my-1 text-info">{{ $readyForPickupCount }}</h2>
-                <small class="text-info fw-semibold"><i class="bi bi-box-seam"></i> Staged at SAO Office</small>
+            <div class="stat-card-green h-100">
+                <i class="bi bi-check-circle-fill text-success stat-card-top-icon"></i>
+                <div class="stat-card-title">Returned / Claimed</div>
+                <div class="stat-card-num text-success">{{ $claimedReportsCount }}</div>
+                <div class="stat-card-sub text-success fw-semibold">
+                    <i class="bi bi-check-all me-1"></i>Successfully returned
+                </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3" style="border-left-color: #198754;">
-                <div class="text-muted fs-7 fw-semibold">Claimed Reports</div>
-                <h2 class="fw-bold my-1 text-success">{{ $claimedReportsCount }}</h2>
-                <small class="text-success fw-semibold"><i class="bi bi-check-all"></i> Successfully returned items</small>
+            <div class="stat-card-blue h-100">
+                <i class="bi bi-collection-fill text-primary stat-card-top-icon"></i>
+                <div class="stat-card-title">Total Logged Items</div>
+                <div class="stat-card-num text-primary">
+                    {{ $storageCount + $claimedReportsCount + $pendingClaimsCount + $readyForPickupCount }}</div>
+                <div class="stat-card-sub text-primary fw-semibold">
+                    <i class="bi bi-database me-1"></i>All recorded items
+                </div>
             </div>
         </div>
     </div>
+
 
     <!-- Analytics Row 1: Yearly Incident Trend (col-lg-7) + Campus Hazard Radar (col-lg-5) -->
     <div class="row g-3 g-md-4 mb-4">

@@ -14,7 +14,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Custom UB BarakoTrack CSS (Cache-Busting for Deployment) -->
-    <link rel="stylesheet" href="{{ asset('css/barako_track.css') }}?v={{ file_exists(public_path('css/barako_track.css')) ? filemtime(public_path('css/barako_track.css')) : time() }}">
+    <link rel="stylesheet"
+        href="{{ asset('css/barako_track.css') }}?v={{ file_exists(public_path('css/barako_track.css')) ? filemtime(public_path('css/barako_track.css')) : time() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
@@ -31,15 +32,51 @@
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <div class="sidebar-brand d-flex align-items-center gap-2">
-            <img src="{{ asset('logo/favicon.png') }}" width="32" height="32" style="object-fit: contain;"
-                alt="Barako Track Logo">
-            <h5 class="m-0">BARAKO <span>TRACK</span></h5>
+        <!-- Brand Header -->
+        <div class="sidebar-brand">
+            <div class="d-flex align-items-center gap-2">
+                <div>
+                    <img src="{{ asset('logo/favicon.png') }}" width="40" height="40"
+                        style="object-fit: contain;" alt="UB">
+                </div>
+                <div style="line-height: 1.15;">
+                    <div class="d-flex align-items-center gap-1">
+                        <span
+                            style="font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; color: #ffffff;">BARAKO</span>
+                        <span
+                            style="font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; color: #fec452;">TRACK</span>
+                        <span class="badge"
+                            style="background-color: #fec452; color: #691220; font-size: 0.62rem; font-weight: 800; padding: 2px 4px; border-radius: 4px;">UB</span>
+                    </div>
+                    <small
+                        style="color: rgba(255,255,255,0.65); font-size: 0.68rem; font-weight: 500; display: block;">Smart
+                        Lost & Found System</small>
+                </div>
+            </div>
         </div>
+
+        <!-- Sidebar User Profile Box (Image 2 style) -->
+        <div class="sidebar-user-box">
+            <div class="sidebar-user-avatar">
+                {{ strtoupper(substr($authUser->name ?? 'U', 0, 1)) }}
+            </div>
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-name" title="{{ $authUser->name }}">{{ $authUser->name }}</div>
+                <div class="sidebar-user-role">
+                    @if ($userRole === 'admin')
+                        ADMIN • SAO MANAGEMENT
+                    @else
+                        STUDENT • #{{ $authUser->student_id_number ?: 'CAMPUS USER' }}
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
         <div class="sidebar-menu">
+            <div class="nav-label">MAIN NAVIGATION</div>
             @if ($userRole === 'admin')
                 <!-- SAO Admin Menu -->
-                <div class="nav-label">SAO Command Center</div>
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2-fill"></i> Dashboard
@@ -57,14 +94,13 @@
                     <i class="bi bi-journal-text"></i> Lost Reports
                 </a>
 
-                <div class="nav-label">Actions</div>
-                <a href="#" class="nav-link text-warning" data-bs-toggle="modal"
+                <div class="nav-label mt-3">QUICK ACTIONS</div>
+                <a href="#" class="nav-link" style="color: #fec452;" data-bs-toggle="modal"
                     data-bs-target="#reportFoundModal">
                     <i class="bi bi-plus-circle-fill text-warning"></i> Add Found Item
                 </a>
             @else
                 <!-- Student Menu -->
-                <div class="nav-label">Student Main Menu</div>
                 <a href="{{ route('student.dashboard') }}"
                     class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2-fill"></i> Dashboard
@@ -86,59 +122,45 @@
                     <i class="bi bi-shield-check"></i> My Claims
                 </a>
 
-                <div class="nav-label">Actions</div>
-                <a href="#" class="nav-link text-warning" data-bs-toggle="modal"
+                <div class="nav-label mt-3">QUICK ACTIONS</div>
+                <a href="#" class="nav-link" style="color: #fec452;" data-bs-toggle="modal"
                     data-bs-target="#reportLostModal">
                     <i class="bi bi-file-earmark-plus-fill text-warning"></i> Report Lost Item
                 </a>
             @endif
         </div>
+
     </div>
 
     <!-- Main Content Area -->
     <div class="main-wrapper">
-        <!-- Top Header -->
-        <header class="top-header d-flex justify-content-between align-items-center px-2 px-sm-3 px-md-4">
+        <!-- Top Header (Image 2 style) -->
+        <header class="top-header">
             <div class="d-flex align-items-center gap-2">
                 <!-- Mobile Sidebar Toggle Button -->
-                <button class="btn btn-light border shadow-sm d-lg-none py-1 px-2 me-1" id="sidebarToggle" type="button" aria-label="Toggle Navigation Sidebar">
+                <button class="btn btn-light border shadow-sm d-lg-none py-1 px-2 me-1" id="sidebarToggle"
+                    type="button" aria-label="Toggle Navigation Sidebar">
                     <i class="bi bi-list fs-4 text-dark"></i>
                 </button>
 
-                <div>
-                    <h5 class="fw-bold m-0 fs-6" style="color: var(--primary-color);">UB Campus</h5>
-                    <small class="text-muted d-none d-md-inline" style="font-size: 0.75rem;">University of Batangas • Care. Connect. Recover.</small>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold" style="color: var(--primary-color); font-size: 0.92rem;">University of
+                        Batangas</span>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-2">
-                <!-- User Info Display -->
-                <div class="d-flex align-items-center gap-2">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($authUser->name) }}&background={{ $userRole === 'admin' ? '1e1e2d' : '752738' }}&color=fec452"
-                        class="rounded-circle" width="34" height="34" alt="User">
-                    <div class="d-none d-md-block text-start" style="line-height: 1.2;">
-                        <div class="fw-bold fs-7 text-truncate" style="max-width: 160px;">{{ $authUser->name }}</div>
-                        <div class="text-muted fs-7 d-flex align-items-center gap-1" style="font-size: 0.7rem;">
-                            @if ($userRole === 'admin')
-                                <span class="badge bg-danger p-1">Admin</span>
-                            @else
-                                <span class="badge bg-secondary p-1">Student</span>
-                                @if (!empty($authUser->student_id_number))
-                                    <span class="fw-semibold text-muted" style="font-size: 0.68rem;">#{{ $authUser->student_id_number }}</span>
-                                @endif
-                            @endif
-                        </div>
-                    </div>
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+                <!-- Real-time Date Badge -->
+                <div class="header-date-badge d-none d-md-flex">
+                    <i class="bi bi-calendar3 text-muted"></i>
+                    <span>{{ now()->format('l, F d, Y') }}</span>
                 </div>
 
-                <div class="vr d-none d-md-block" style="height: 20px;"></div>
-
-                <!-- Logout Button -->
+                <!-- Red Power Icon Quick Logout -->
                 <form action="{{ route('logout') }}" method="POST" class="m-0">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 px-md-3" title="Logout">
+                    <button type="submit" class="header-power-btn" title="Sign Out">
                         <i class="bi bi-box-arrow-right"></i>
-                        <span class="d-none d-sm-inline ms-1">Logout</span>
                     </button>
                 </form>
             </div>
@@ -151,6 +173,12 @@
 
             @yield('content')
         </main>
+
+        <!-- App Footer (Image 2 style) -->
+        <footer class="app-footer py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>University of Batangas • Lost and Found Management System (BarakoTrack)</div>
+            <div>&copy; {{ date('Y') }} UB. All rights reserved.</div>
+        </footer>
     </div>
 
     <!-- Modal: Report Lost Item (Student) -->
@@ -583,7 +611,8 @@
                                 let icon = 'bi-chat-dots-fill';
                                 let label = s;
                                 const lower = s.toLowerCase();
-                                if (lower.includes('found') && (lower.includes('report') || lower.includes('how') || lower.includes('surrender'))) {
+                                if (lower.includes('found') && (lower.includes('report') || lower.includes(
+                                        'how') || lower.includes('surrender'))) {
                                     icon = 'bi-box-arrow-in-down';
                                     label = 'Report Found Item';
                                 } else if (lower.includes('lost') && lower.includes('report')) {
@@ -592,10 +621,12 @@
                                 } else if (lower.includes('claim') || lower.includes('proof')) {
                                     icon = 'bi-shield-check';
                                     label = 'How to Claim Item';
-                                } else if (lower.includes('where') || lower.includes('office') || lower.includes('location')) {
+                                } else if (lower.includes('where') || lower.includes('office') || lower
+                                    .includes('location')) {
                                     icon = 'bi-geo-alt-fill';
                                     label = 'SAO Office Location';
-                                } else if (lower.includes('hour') || lower.includes('time') || lower.includes('schedule') || lower.includes('open')) {
+                                } else if (lower.includes('hour') || lower.includes('time') || lower.includes(
+                                        'schedule') || lower.includes('open')) {
                                     icon = 'bi-clock-fill';
                                     label = 'Office Hours';
                                 } else if (lower.includes('search') && lower.includes('found')) {
@@ -697,24 +728,24 @@
         }
 
         // Mobile Sidebar Responsiveness Handler
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.querySelector('.sidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
 
             if (sidebarToggle && sidebar && backdrop) {
-                sidebarToggle.addEventListener('click', function () {
+                sidebarToggle.addEventListener('click', function() {
                     sidebar.classList.toggle('show');
                     backdrop.classList.toggle('show');
                 });
 
-                backdrop.addEventListener('click', function () {
+                backdrop.addEventListener('click', function() {
                     sidebar.classList.remove('show');
                     backdrop.classList.remove('show');
                 });
 
                 document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                    link.addEventListener('click', function () {
+                    link.addEventListener('click', function() {
                         if (window.innerWidth < 992) {
                             sidebar.classList.remove('show');
                             backdrop.classList.remove('show');

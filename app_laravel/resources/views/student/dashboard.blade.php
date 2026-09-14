@@ -4,71 +4,109 @@
 
 @section('content')
     @include('partials.loading_overlay')
+    <!-- Page Header (Image 2 style) -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 gap-sm-3">
         <div>
-            <h4 class="fw-bold m-0" style="color: var(--primary-color);">Welcome back, {{ $user->name ?? 'Student' }}!</h4>
-            <span class="text-muted fs-7">Manage your campus lost item reports and check found items directory.</span>
+            <h3 class="fw-bold m-0" style="color: var(--primary-color);">Student Dashboard</h3>
+            <p class="text-muted fs-7 mb-0 mt-1">Overview and real-time status of campus lost and found items at University of Batangas</p>
         </div>
-        <button class="btn btn-primary-custom btn-sm px-3 py-2 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#reportLostModal">
-            <i class="bi bi-plus-circle-fill me-1"></i> Report New Lost Item
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('student.lost-reports') }}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
+                <i class="bi bi-card-checklist me-1"></i> My Lost Reports
+            </a>
+            <button class="btn btn-primary-custom btn-sm px-3 py-2 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#reportLostModal">
+                <i class="bi bi-plus-circle-fill me-1"></i> Report Lost Item
+            </button>
+        </div>
     </div>
 
-    <!-- Stats Cards Grid -->
+    <!-- Row 1: Primary Full-Border Stats Cards (Image 2 style) -->
+    <div class="row g-3 g-md-4 mb-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="stat-card-amber h-100">
+                <i class="bi bi-search text-warning stat-card-top-icon"></i>
+                <div class="stat-card-title">Active Lost Reports</div>
+                <div class="stat-card-num">{{ $lostItemsCount }}</div>
+                <div class="stat-card-sub text-warning fw-semibold">
+                    <i class="bi bi-arrow-up-right me-1"></i>Currently active searches
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="stat-card-red h-100">
+                <i class="bi bi-exclamation-triangle-fill text-danger stat-card-top-icon"></i>
+                <div class="stat-card-title">Pending Claims</div>
+                <div class="stat-card-num text-danger">{{ $pendingClaimsCount }}</div>
+                <div class="stat-card-sub text-danger fw-semibold">
+                    <i class="bi bi-clock-history me-1"></i>Under SAO review
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="stat-card-green h-100">
+                <i class="bi bi-check-circle-fill text-success stat-card-top-icon"></i>
+                <div class="stat-card-title">Returned / Claimed</div>
+                <div class="stat-card-num text-success">{{ $studentClaims->whereIn('status', ['approved', 'completed', 'claimed'])->count() ?: 0 }}</div>
+                <div class="stat-card-sub text-success fw-semibold">
+                    <i class="bi bi-shield-check me-1"></i>Successfully completed
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="stat-card-blue h-100">
+                <i class="bi bi-box-seam-fill text-primary stat-card-top-icon"></i>
+                <div class="stat-card-title">Total Found in Storage</div>
+                <div class="stat-card-num text-primary">{{ $foundItemsCount }}</div>
+                <div class="stat-card-sub text-primary fw-semibold">
+                    <i class="bi bi-building me-1"></i>Secured at SAO Office
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Mini Metric Cards (Image 2 style) -->
     <div class="row g-3 g-md-4 mb-4">
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted fs-7 fw-semibold">Active Lost Reports</div>
-                        <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $lostItemsCount }}</h2>
-                        <small class="text-danger fw-semibold"><i class="bi bi-arrow-up-right me-1"></i>Active searches</small>
-                    </div>
-                    <div class="stat-icon-wrapper" style="background: rgba(220, 38, 38, 0.1); color: #dc2626;">
-                        <i class="bi bi-search"></i>
-                    </div>
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">My Lost Reports</div>
+                    <div class="mini-stat-value">{{ $studentLostItems->count() }}</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card secondary p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted fs-7 fw-semibold">Found Items in Storage</div>
-                        <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $foundItemsCount }}</h2>
-                        <small class="text-success fw-semibold"><i class="bi bi-shield-check me-1"></i>Secured at SAO</small>
-                    </div>
-                    <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                        <i class="bi bi-box-seam-fill"></i>
-                    </div>
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(168, 85, 247, 0.12); color: #a855f7;">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Student ID</div>
+                    <div class="mini-stat-value fs-6 text-truncate" style="max-width: 140px;">{{ $user->student_id_number ?: '2024' }}</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted fs-7 fw-semibold">My Pending Claims</div>
-                        <h2 class="fw-bold my-1" style="color: var(--primary-color);">{{ $pendingClaimsCount }}</h2>
-                        <small class="text-warning fw-semibold"><i class="bi bi-clock-history me-1"></i>Under SAO review</small>
-                    </div>
-                    <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                    </div>
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(239, 68, 68, 0.12); color: #ef4444;">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">CNN AI Matches</div>
+                    <div class="mini-stat-value text-danger">{{ $aiMatchesCount }}</div>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card card-custom stat-card secondary p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted fs-7 fw-semibold">CNN AI Matches Found</div>
-                        <h2 class="fw-bold my-1 text-success">{{ $aiMatchesCount }}</h2>
-                        <small class="text-muted fw-semibold"><i class="bi bi-cpu me-1"></i>MobileNetV2 scans</small>
-                    </div>
-                    <div class="stat-icon-wrapper" style="background: rgba(117, 39, 56, 0.1); color: var(--primary-color);">
-                        <i class="bi bi-stars"></i>
-                    </div>
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <div>
+                    <div class="mini-stat-label">Storage Available</div>
+                    <div class="mini-stat-value text-success">{{ $foundItemsCount }}</div>
                 </div>
             </div>
         </div>
@@ -151,10 +189,99 @@
         </div>
     @endif
 
+    <!-- Recent Transactions Table Card (Image 2 style) -->
+    <div class="card card-custom p-4 mb-4 shadow-sm border-0" style="background: #ffffff; border-radius: 12px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-danger fs-5"></i>
+                <h5 class="fw-bold m-0 text-dark">Recent Transactions</h5>
+            </div>
+            <a href="{{ route('student.found-items') }}" class="text-decoration-none fw-semibold fs-7" style="color: #64748b;">
+                View All &rarr;
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle m-0">
+                <thead>
+                    <tr style="font-size: 0.8rem; color: #1e293b; border-bottom: 2px solid #f1f5f9;">
+                        <th class="py-3 px-3">Ref No.</th>
+                        <th class="py-3 px-3">Student</th>
+                        <th class="py-3 px-3">Items</th>
+                        <th class="py-3 px-3">Date Recorded</th>
+                        <th class="py-3 px-3">Storage / Due Location</th>
+                        <th class="py-3 px-3">Status</th>
+                        <th class="py-3 px-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($recentFoundItems as $item)
+                        <tr style="font-size: 0.82rem; border-bottom: 1px solid #f8fafc;">
+                            <td class="py-3 px-3 fw-bold" style="color: #691220;">
+                                BT-{{ $item->created_at ? $item->created_at->format('Ymd') : '20260914' }}-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                            </td>
+                            <td class="py-3 px-3">
+                                <div class="fw-bold text-dark">{{ $user->name ?? 'Campus Student' }}</div>
+                                <small class="text-muted">UB-{{ $user->student_id_number ?: '2024-00123' }} &bull; Batangas Campus</small>
+                            </td>
+                            <td class="py-3 px-3">
+                                <div class="text-dark fw-medium">&bull; {{ $item->title }} ({{ $item->category->name ?? 'Campus Storage' }})</div>
+                                <small class="text-muted">{{ Str::limit($item->description, 35) }}</small>
+                            </td>
+                            <td class="py-3 px-3 text-muted">
+                                {{ $item->date_found ? $item->date_found->format('M d, Y h:i A') : $item->created_at->format('M d, Y h:i A') }}
+                            </td>
+                            <td class="py-3 px-3">
+                                <span class="badge bg-light text-secondary border px-2 py-1">
+                                    <i class="bi bi-building me-1"></i> {{ $item->storage_location ?: 'SAO Storage Room' }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-3">
+                                @if ($item->status === 'available')
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold">
+                                        &check; Available
+                                    </span>
+                                @elseif ($item->status === 'claim_pending')
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 fw-semibold">
+                                        &bull; Pending Review
+                                    </span>
+                                @else
+                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary px-3 py-1 fw-semibold">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-3 text-center">
+                                @if ($item->status === 'available')
+                                    <button class="btn btn-sm btn-light border shadow-sm px-2 py-1"
+                                        title="View / Claim Item"
+                                        onclick="openClaimModal('{{ $item->id }}', '{{ addslashes($item->title) }}', '{{ addslashes($item->storage_location) }}')">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                @else
+                                    <button class="btn btn-sm btn-light border text-muted px-2 py-1" disabled>
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox fs-3 d-block mb-1 text-secondary"></i>
+                                No recent transactions recorded yet.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Quick Found Items Preview -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold m-0" style="color: var(--primary-color);">
-            <i class="bi bi-box-seam text-warning me-1"></i> Recent Found Items in Storage
+            <i class="bi bi-box-seam text-warning me-1"></i> Surrendered Items Gallery
         </h5>
         <a href="{{ route('student.found-items') }}" class="text-decoration-none fw-semibold fs-7">
             View Full Directory <i class="bi bi-chevron-right"></i>
